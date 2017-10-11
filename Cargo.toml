@@ -1,0 +1,16 @@
+[package]
+name = "smawk"
+version = "0.1.0"
+authors = ["Martin Geisler <martin@geisler.net>"]
+description = """
+Functions for finding the minimum value in each row of a totally
+monotone matrix.
+"""
+repository = "https://github.com/mgeisler/smawk"
+readme = "README.md"
+keywords = ["smawk", "matrix", "optimization", "dynamic programming"]
+categories = ["algorithms", "science"]
+license = "MIT"
+
+[dependencies]
+ndarray = "0.10"
