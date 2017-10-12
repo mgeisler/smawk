@@ -172,37 +172,43 @@ mod tests {
     #[test]
     fn brute_force_1x1() {
         let matrix = arr2(&[[7]]);
-        assert_eq!(brute_force_row_minima(&matrix.view()), vec![0]);
+        let minima = vec![0];
+        assert_eq!(brute_force_row_minima(&matrix.view()), minima);
     }
 
     #[test]
     fn brute_force_2x1() {
         let matrix = arr2(&[[7], [3]]);
-        assert_eq!(brute_force_row_minima(&matrix.view()), vec![0, 0]);
+        let minima = vec![0, 0];
+        assert_eq!(brute_force_row_minima(&matrix.view()), minima);
     }
 
     #[test]
     fn brute_force_1x2() {
         let matrix = arr2(&[[7, 3]]);
-        assert_eq!(brute_force_row_minima(&matrix.view()), vec![1]);
+        let minima = vec![1];
+        assert_eq!(brute_force_row_minima(&matrix.view()), minima);
     }
 
     #[test]
     fn brute_force_2x2() {
         let matrix = arr2(&[[7, 3], [3, 7]]);
-        assert_eq!(brute_force_row_minima(&matrix.view()), vec![1, 0]);
+        let minima = vec![1, 0];
+        assert_eq!(brute_force_row_minima(&matrix.view()), minima);
     }
 
     #[test]
     fn brute_force_3x3() {
         let matrix = arr2(&[[7, 3, 5], [7, 5, 3], [0, 0, 3]]);
-        assert_eq!(brute_force_row_minima(&matrix.view()), vec![1, 2, 0]);
+        let minima = vec![1, 2, 0];
+        assert_eq!(brute_force_row_minima(&matrix.view()), minima);
     }
 
     #[test]
     fn brute_force_4x4() {
         let matrix = arr2(&[[0, 7, 3, 5], [0, 7, 5, 3], [0, 0, 3, -1], [7, 7, 5, 5]]);
-        assert_eq!(brute_force_row_minima(&matrix.view()), vec![0, 0, 3, 2]);
+        let minima = vec![0, 0, 3, 2];
+        assert_eq!(brute_force_row_minima(&matrix.view()), minima);
     }
 
     #[test]
@@ -212,7 +218,8 @@ mod tests {
                             [0, 0, 3, 1, 3],
                             [3, 4, 5, 6, 7],
                             [7, 6, 5, 5, 6]]);
-        assert_eq!(brute_force_row_minima(&matrix.view()), vec![4, 2, 0, 0, 2]);
+        let minima = vec![4, 2, 0, 0, 2];
+        assert_eq!(brute_force_row_minima(&matrix.view()), minima);
     }
 
 }
