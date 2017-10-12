@@ -100,7 +100,7 @@ impl MongePrim {
 }
 
 /// Generate a random Monge matrix.
-pub fn random_monge<R: Rng>(m: usize, n: usize, rng: &mut R) -> Array2<i32> {
+pub fn random_monge_matrix<R: Rng>(m: usize, n: usize, rng: &mut R) -> Array2<i32> {
     let mut matrix = Array2::from_elem((m, n), 0);
     for _ in 0..15 {
         let tmp = match rng.gen() {
