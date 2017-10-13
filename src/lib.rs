@@ -171,54 +171,54 @@ mod tests {
 
     #[test]
     fn brute_force_1x1() {
-        let matrix = arr2(&[[7]]);
+        let matrix = arr2(&[[2]]);
         let minima = vec![0];
         assert_eq!(brute_force_row_minima(&matrix.view()), minima);
     }
 
     #[test]
     fn brute_force_2x1() {
-        let matrix = arr2(&[[7], [3]]);
+        let matrix = arr2(&[[3], [2]]);
         let minima = vec![0, 0];
         assert_eq!(brute_force_row_minima(&matrix.view()), minima);
     }
 
     #[test]
     fn brute_force_1x2() {
-        let matrix = arr2(&[[7, 3]]);
+        let matrix = arr2(&[[2, 1]]);
         let minima = vec![1];
         assert_eq!(brute_force_row_minima(&matrix.view()), minima);
     }
 
     #[test]
     fn brute_force_2x2() {
-        let matrix = arr2(&[[7, 3], [3, 7]]);
-        let minima = vec![1, 0];
+        let matrix = arr2(&[[3, 2], [2, 1]]);
+        let minima = vec![1, 1];
         assert_eq!(brute_force_row_minima(&matrix.view()), minima);
     }
 
     #[test]
     fn brute_force_3x3() {
-        let matrix = arr2(&[[7, 3, 5], [7, 5, 3], [0, 0, 3]]);
-        let minima = vec![1, 2, 0];
+        let matrix = arr2(&[[3, 4, 4], [3, 4, 4], [2, 3, 3]]);
+        let minima = vec![0, 0, 0];
         assert_eq!(brute_force_row_minima(&matrix.view()), minima);
     }
 
     #[test]
     fn brute_force_4x4() {
-        let matrix = arr2(&[[0, 7, 3, 5], [0, 7, 5, 3], [0, 0, 3, -1], [7, 7, 5, 5]]);
-        let minima = vec![0, 0, 3, 2];
+        let matrix = arr2(&[[4, 5, 5, 5], [2, 3, 3, 3], [2, 3, 3, 3], [2, 2, 2, 2]]);
+        let minima = vec![0, 0, 0, 0];
         assert_eq!(brute_force_row_minima(&matrix.view()), minima);
     }
 
     #[test]
     fn brute_force_5x5() {
-        let matrix = arr2(&[[7, 7, 3, 5, 0],
-                            [7, 7, 5, 5, 9],
-                            [0, 0, 3, 1, 3],
-                            [3, 4, 5, 6, 7],
-                            [7, 6, 5, 5, 6]]);
-        let minima = vec![4, 2, 0, 0, 2];
+        let matrix = arr2(&[[3, 2, 4, 5, 6],
+                            [2, 1, 3, 3, 4],
+                            [2, 1, 3, 3, 4],
+                            [3, 2, 4, 3, 4],
+                            [4, 3, 2, 1, 1]]);
+        let minima = vec![1, 1, 1, 1, 3];
         assert_eq!(brute_force_row_minima(&matrix.view()), minima);
     }
 
