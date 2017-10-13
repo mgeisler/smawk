@@ -102,12 +102,12 @@ impl MongePrim {
 /// Generate a random Monge matrix.
 pub fn random_monge_matrix<R: Rng>(m: usize, n: usize, rng: &mut R) -> Array2<i32> {
     let mut matrix = Array2::from_elem((m, n), 0);
-    for _ in 0..15 {
+    for _ in 0..(m + n) {
         let tmp = match rng.gen() {
             true => MongePrim::LowerLeftOnes,
             false => MongePrim::UpperRightOnes,
         }.to_matrix(m, n, rng);
-        matrix = matrix + rng.gen_range(1, 15) * tmp;
+        matrix = matrix + tmp;
     }
     matrix
 }
