@@ -38,7 +38,7 @@ pub fn brute_force_row_minima(matrix: &ArrayView2<i32>) -> Vec<usize> {
 ///
 /// It is an error to call this on a matrix with zero columns.
 pub fn recursive_row_minima(matrix: &Array2<i32>) -> Vec<usize> {
-    fn inner(matrix: &ArrayView2<i32>, x_offset: usize, minima: &mut [usize]) {
+    fn inner(matrix: ArrayView2<i32>, x_offset: usize, minima: &mut [usize]) {
         if matrix.is_empty() {
             return;
         }
@@ -52,15 +52,15 @@ pub fn recursive_row_minima(matrix: &Array2<i32>) -> Vec<usize> {
         }
 
         let top_left = matrix.slice(s![..mid_row as isize, ..(min_idx + 1) as isize]);
-        inner(&top_left, x_offset, &mut minima[..mid_row]);
+        inner(top_left, x_offset, &mut minima[..mid_row]);
 
         let bot_right = matrix.slice(s![(mid_row + 1) as isize.., min_idx as isize..]);
-        inner(&bot_right, x_offset + min_idx, &mut minima[mid_row + 1..]);
+        inner(bot_right, x_offset + min_idx, &mut minima[mid_row + 1..]);
 
     }
 
     let mut minima = vec![0; matrix.rows()];
-    inner(&matrix.view(), 0, &mut minima);
+    inner(matrix.view(), 0, &mut minima);
 
     minima
 }
