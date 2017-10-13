@@ -32,6 +32,39 @@ pub fn brute_force_row_minima(matrix: &ArrayView2<i32>) -> Vec<usize> {
     matrix.genrows().into_iter().map(row_minimum).collect()
 }
 
+/// Compute row minima in O(*m* + *n* log *m*) time.
+///
+/// # Panics
+///
+/// It is an error to call this on a matrix with zero columns.
+pub fn recursive_row_minima(matrix: &Array2<i32>) -> Vec<usize> {
+    fn inner(matrix: &ArrayView2<i32>, x_offset: usize, minima: &mut [usize]) {
+        if matrix.is_empty() {
+            return;
+        }
+
+        let mid_row = matrix.rows() / 2;
+        let min_idx = row_minimum(matrix.row(mid_row));
+        minima[mid_row] = x_offset + min_idx;
+
+        if mid_row == 0 {
+            return; // Matrix has a single row, so we're done.
+        }
+
+        let top_left = matrix.slice(s![..mid_row as isize, ..(min_idx + 1) as isize]);
+        inner(&top_left, x_offset, &mut minima[..mid_row]);
+
+        let bot_right = matrix.slice(s![(mid_row + 1) as isize.., min_idx as isize..]);
+        inner(&bot_right, x_offset + min_idx, &mut minima[mid_row + 1..]);
+
+    }
+
+    let mut minima = vec![0; matrix.rows()];
+    inner(&matrix.view(), 0, &mut minima);
+
+    minima
+}
+
 /// Verify that a matrix is a Monge matrix.
 ///
 /// A [Monge matrix] \(or array) is a matrix where the following
@@ -220,6 +253,59 @@ mod tests {
                             [4, 3, 2, 1, 1]]);
         let minima = vec![1, 1, 1, 1, 3];
         assert_eq!(brute_force_row_minima(&matrix.view()), minima);
+    }
+
+    #[test]
+    fn recursive_1x1() {
+        let matrix = arr2(&[[2]]);
+        let minima = vec![0];
+        assert_eq!(recursive_row_minima(&matrix), minima);
+    }
+
+    #[test]
+    fn recursive_2x1() {
+        let matrix = arr2(&[[3], [2]]);
+        let minima = vec![0, 0];
+        assert_eq!(recursive_row_minima(&matrix), minima);
+    }
+
+    #[test]
+    fn recursive_1x2() {
+        let matrix = arr2(&[[2, 1]]);
+        let minima = vec![1];
+        assert_eq!(recursive_row_minima(&matrix), minima);
+    }
+
+    #[test]
+    fn recursive_2x2() {
+        let matrix = arr2(&[[3, 2], [2, 1]]);
+        let minima = vec![1, 1];
+        assert_eq!(recursive_row_minima(&matrix), minima);
+    }
+
+    #[test]
+    fn recursive_3x3() {
+        let matrix = arr2(&[[3, 4, 4], [3, 4, 4], [2, 3, 3]]);
+        let minima = vec![0, 0, 0];
+        assert_eq!(recursive_row_minima(&matrix), minima);
+    }
+
+    #[test]
+    fn recursive_4x4() {
+        let matrix = arr2(&[[4, 5, 5, 5], [2, 3, 3, 3], [2, 3, 3, 3], [2, 2, 2, 2]]);
+        let minima = vec![0, 0, 0, 0];
+        assert_eq!(recursive_row_minima(&matrix), minima);
+    }
+
+    #[test]
+    fn recursive_5x5() {
+        let matrix = arr2(&[[3, 2, 4, 5, 6],
+                            [2, 1, 3, 3, 4],
+                            [2, 1, 3, 3, 4],
+                            [3, 2, 4, 3, 4],
+                            [4, 3, 2, 1, 1]]);
+        let minima = vec![1, 1, 1, 1, 3];
+        assert_eq!(recursive_row_minima(&matrix), minima);
     }
 
 }
