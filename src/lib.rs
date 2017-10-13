@@ -84,13 +84,13 @@ impl MongePrim {
                 }
             }
             MongePrim::UpperRightOnes => {
-                let i = rng.gen_range(0, m as isize);
-                let j = rng.gen_range(0, n as isize);
+                let i = rng.gen_range(0, (m + 1) as isize);
+                let j = rng.gen_range(0, (n + 1) as isize);
                 matrix.slice_mut(s![..i, -j..]).fill(T::one());
             }
             MongePrim::LowerLeftOnes => {
-                let i = rng.gen_range(0, m as isize);
-                let j = rng.gen_range(0, n as isize);
+                let i = rng.gen_range(0, (m + 1) as isize);
+                let j = rng.gen_range(0, (n + 1) as isize);
                 matrix.slice_mut(s![-i.., ..j]).fill(T::one());
             }
         }
@@ -149,8 +149,8 @@ mod tests {
         let matrix = MongePrim::UpperRightOnes.to_matrix(5, 4, &mut rng);
         assert!(is_monge(&matrix));
         assert_eq!(matrix,
-                   arr2(&[[1, 1, 1, 1],
-                          [0, 0, 0, 0],
+                   arr2(&[[0, 0, 0, 1],
+                          [0, 0, 0, 1],
                           [0, 0, 0, 0],
                           [0, 0, 0, 0],
                           [0, 0, 0, 0]]));
@@ -165,8 +165,8 @@ mod tests {
                    arr2(&[[0, 0, 0, 0],
                           [0, 0, 0, 0],
                           [0, 0, 0, 0],
-                          [0, 0, 0, 0],
-                          [0, 0, 0, 0]]));
+                          [1, 0, 0, 0],
+                          [1, 0, 0, 0]]));
     }
 
     #[test]
