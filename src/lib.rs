@@ -425,4 +425,31 @@ mod tests {
         let minima = vec![1, 1, 1, 1, 3];
         assert_eq!(smawk_row_minima(&matrix), minima);
     }
+
+    /// Check that the brute_force_row_minima, recursive_row_minima,
+    /// and smawk_row_minima functions give identical results on a
+    /// large number of randomly generated Monge matrices.
+    #[test]
+    fn implementations_agree() {
+        let sizes = vec![1, 2, 3, 4, 5, 10, 15, 20, 30];
+        let mut rng = XorShiftRng::new_unseeded();
+        for _ in 0..4 {
+            for m in sizes.clone().iter() {
+                for n in sizes.clone().iter() {
+                    let matrix = random_monge_matrix(*m, *n, &mut rng);
+                    let brute_force = brute_force_row_minima(&matrix.view());
+                    let recursive = recursive_row_minima(&matrix);
+                    let smawk = smawk_row_minima(&matrix);
+                    assert_eq!(brute_force,
+                               recursive,
+                               "recursive and brute force differs on:\n{:?}",
+                               matrix);
+                    assert_eq!(brute_force,
+                               smawk,
+                               "SMAWK and brute force differs on:\n{:?}",
+                               matrix);
+                }
+            }
+        }
+    }
 }
