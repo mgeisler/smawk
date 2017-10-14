@@ -17,3 +17,6 @@ ndarray = "0.10"
 num-traits = "0.1"
 rand = "0.3"
 rand_derive = "0.3"
+
+[dev-dependencies]
+version-sync = "0.3"
