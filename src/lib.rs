@@ -1,3 +1,5 @@
+#![doc(html_root_url = "https://docs.rs/smawk/0.1.0")]
+
 #[macro_use(s)]
 extern crate ndarray;
 extern crate num_traits;
