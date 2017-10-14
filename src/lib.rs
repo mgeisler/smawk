@@ -65,6 +65,71 @@ pub fn recursive_row_minima(matrix: &Array2<i32>) -> Vec<usize> {
     minima
 }
 
+/// Compute row-minima using the SMAWK algorithm.
+///
+/// Running time on an *m* ✕ *n* matrix: O(*m* + *n*).
+///
+/// # Panics
+///
+/// It is an error to call this on a matrix with zero columns.
+pub fn smawk_row_minima(matrix: &Array2<i32>) -> Vec<usize> {
+    fn inner(matrix: &ArrayView2<i32>, rows: &[usize], cols: &[usize], mut minima: &mut [usize]) {
+        if rows.is_empty() {
+            return;
+        }
+
+        let mut stack = Vec::with_capacity(rows.len());
+        for c in cols {
+            while !stack.is_empty() &&
+                  matrix[[rows[stack.len() - 1], stack[stack.len() - 1]]] >
+                  matrix[[rows[stack.len() - 1], *c]] {
+                stack.pop();
+            }
+            if stack.len() != rows.len() {
+                stack.push(*c);
+            }
+        }
+        let cols = &stack;
+
+        let mut odd_rows = Vec::with_capacity(1 + rows.len() / 2);
+        for (idx, r) in rows.iter().enumerate() {
+            if idx % 2 == 1 {
+                odd_rows.push(*r);
+            }
+        }
+
+        inner(&matrix, &odd_rows, cols, &mut minima);
+
+        let mut c = 0;
+        for (r, &row) in rows.iter().enumerate() {
+            if r % 2 == 1 {
+                continue;
+            }
+            let mut col = cols[c];
+            let last_col = if r == rows.len() - 1 {
+                cols[cols.len() - 1]
+            } else {
+                minima[rows[r + 1]]
+            };
+            let mut pair = (matrix[[row, col]], col);
+            while col != last_col {
+                c += 1;
+                col = cols[c];
+                pair = std::cmp::min(pair, (matrix[[row, col]], col));
+            }
+            minima[row] = pair.1;
+        }
+    }
+
+    let mut minima = vec![0; matrix.rows()];
+    inner(&matrix.view(),
+          &(0..matrix.rows()).collect::<Vec<_>>(),
+          &(0..matrix.cols()).collect::<Vec<_>>(),
+          &mut minima);
+
+    minima
+}
+
 /// Verify that a matrix is a Monge matrix.
 ///
 /// A [Monge matrix] \(or array) is a matrix where the following
@@ -308,4 +373,83 @@ mod tests {
         assert_eq!(recursive_row_minima(&matrix), minima);
     }
 
+    #[test]
+    fn smawk_1x1() {
+        let matrix = arr2(&[[2]]);
+        let minima = vec![0];
+        assert_eq!(smawk_row_minima(&matrix), minima);
+    }
+
+    #[test]
+    fn smawk_2x1() {
+        let matrix = arr2(&[[3], [2]]);
+        let minima = vec![0, 0];
+        assert_eq!(smawk_row_minima(&matrix), minima);
+    }
+
+    #[test]
+    fn smawk_1x2() {
+        let matrix = arr2(&[[2, 1]]);
+        let minima = vec![1];
+        assert_eq!(smawk_row_minima(&matrix), minima);
+    }
+
+    #[test]
+    fn smawk_2x2() {
+        let matrix = arr2(&[[3, 2], [2, 1]]);
+        let minima = vec![1, 1];
+        assert_eq!(smawk_row_minima(&matrix), minima);
+    }
+
+    #[test]
+    fn smawk_3x3() {
+        let matrix = arr2(&[[3, 4, 4], [3, 4, 4], [2, 3, 3]]);
+        let minima = vec![0, 0, 0];
+        assert_eq!(smawk_row_minima(&matrix), minima);
+    }
+
+    #[test]
+    fn smawk_4x4() {
+        let matrix = arr2(&[[4, 5, 5, 5], [2, 3, 3, 3], [2, 3, 3, 3], [2, 2, 2, 2]]);
+        let minima = vec![0, 0, 0, 0];
+        assert_eq!(smawk_row_minima(&matrix), minima);
+    }
+
+    #[test]
+    fn smawk_5x5() {
+        let matrix = arr2(&[[3, 2, 4, 5, 6],
+                            [2, 1, 3, 3, 4],
+                            [2, 1, 3, 3, 4],
+                            [3, 2, 4, 3, 4],
+                            [4, 3, 2, 1, 1]]);
+        let minima = vec![1, 1, 1, 1, 3];
+        assert_eq!(smawk_row_minima(&matrix), minima);
+    }
+
+    /// Check that the brute_force_row_minima, recursive_row_minima,
+    /// and smawk_row_minima functions give identical results on a
+    /// large number of randomly generated Monge matrices.
+    #[test]
+    fn implementations_agree() {
+        let sizes = vec![1, 2, 3, 4, 5, 10, 15, 20, 30];
+        let mut rng = XorShiftRng::new_unseeded();
+        for _ in 0..4 {
+            for m in sizes.clone().iter() {
+                for n in sizes.clone().iter() {
+                    let matrix = random_monge_matrix(*m, *n, &mut rng);
+                    let brute_force = brute_force_row_minima(&matrix.view());
+                    let recursive = recursive_row_minima(&matrix);
+                    let smawk = smawk_row_minima(&matrix);
+                    assert_eq!(brute_force,
+                               recursive,
+                               "recursive and brute force differs on:\n{:?}",
+                               matrix);
+                    assert_eq!(brute_force,
+                               smawk,
+                               "SMAWK and brute force differs on:\n{:?}",
+                               matrix);
+                }
+            }
+        }
+    }
 }
