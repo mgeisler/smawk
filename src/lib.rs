@@ -30,7 +30,7 @@ fn row_minimum(row: ArrayView1<i32>) -> usize {
 /// # Panics
 ///
 /// It is an error to call this on a matrix with zero columns.
-pub fn brute_force_row_minima(matrix: &ArrayView2<i32>) -> Vec<usize> {
+pub fn brute_force_row_minima(matrix: &Array2<i32>) -> Vec<usize> {
     matrix.genrows().into_iter().map(row_minimum).collect()
 }
 
@@ -273,42 +273,42 @@ mod tests {
     fn brute_force_1x1() {
         let matrix = arr2(&[[2]]);
         let minima = vec![0];
-        assert_eq!(brute_force_row_minima(&matrix.view()), minima);
+        assert_eq!(brute_force_row_minima(&matrix), minima);
     }
 
     #[test]
     fn brute_force_2x1() {
         let matrix = arr2(&[[3], [2]]);
         let minima = vec![0, 0];
-        assert_eq!(brute_force_row_minima(&matrix.view()), minima);
+        assert_eq!(brute_force_row_minima(&matrix), minima);
     }
 
     #[test]
     fn brute_force_1x2() {
         let matrix = arr2(&[[2, 1]]);
         let minima = vec![1];
-        assert_eq!(brute_force_row_minima(&matrix.view()), minima);
+        assert_eq!(brute_force_row_minima(&matrix), minima);
     }
 
     #[test]
     fn brute_force_2x2() {
         let matrix = arr2(&[[3, 2], [2, 1]]);
         let minima = vec![1, 1];
-        assert_eq!(brute_force_row_minima(&matrix.view()), minima);
+        assert_eq!(brute_force_row_minima(&matrix), minima);
     }
 
     #[test]
     fn brute_force_3x3() {
         let matrix = arr2(&[[3, 4, 4], [3, 4, 4], [2, 3, 3]]);
         let minima = vec![0, 0, 0];
-        assert_eq!(brute_force_row_minima(&matrix.view()), minima);
+        assert_eq!(brute_force_row_minima(&matrix), minima);
     }
 
     #[test]
     fn brute_force_4x4() {
         let matrix = arr2(&[[4, 5, 5, 5], [2, 3, 3, 3], [2, 3, 3, 3], [2, 2, 2, 2]]);
         let minima = vec![0, 0, 0, 0];
-        assert_eq!(brute_force_row_minima(&matrix.view()), minima);
+        assert_eq!(brute_force_row_minima(&matrix), minima);
     }
 
     #[test]
@@ -319,7 +319,7 @@ mod tests {
                             [3, 2, 4, 3, 4],
                             [4, 3, 2, 1, 1]]);
         let minima = vec![1, 1, 1, 1, 3];
-        assert_eq!(brute_force_row_minima(&matrix.view()), minima);
+        assert_eq!(brute_force_row_minima(&matrix), minima);
     }
 
     #[test]
@@ -439,7 +439,7 @@ mod tests {
             for m in sizes.clone().iter() {
                 for n in sizes.clone().iter() {
                     let matrix = random_monge_matrix(*m, *n, &mut rng);
-                    let brute_force = brute_force_row_minima(&matrix.view());
+                    let brute_force = brute_force_row_minima(&matrix);
                     let recursive = recursive_row_minima(&matrix);
                     let smawk = smawk_row_minima(&matrix);
                     assert_eq!(brute_force,
