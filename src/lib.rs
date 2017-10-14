@@ -78,7 +78,7 @@ pub fn smawk_row_minima(matrix: &Array2<i32>) -> Vec<usize> {
             return;
         }
 
-        let mut stack = vec![];
+        let mut stack = Vec::with_capacity(rows.len());
         for c in cols {
             while !stack.is_empty() &&
                   matrix[[rows[stack.len() - 1], stack[stack.len() - 1]]] >
