@@ -17,3 +17,7 @@ build_script:
 
 test_script:
   - cargo test --verbose
+
+cache:
+  - '%USERPROFILE%\.cargo'
+  - target
