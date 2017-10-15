@@ -283,8 +283,11 @@ impl MongePrim {
 }
 
 /// Generate a random Monge matrix.
-pub fn random_monge_matrix<R: Rng>(m: usize, n: usize, rng: &mut R) -> Array2<i32> {
-    let mut matrix = Array2::from_elem((m, n), 0);
+pub fn random_monge_matrix<R: Rng, T>(m: usize, n: usize, rng: &mut R) -> Array2<T>
+where
+    T: Rand + PrimInt,
+{
+    let mut matrix = Array2::from_elem((m, n), T::zero());
     for _ in 0..(m + n) {
         let tmp = match rng.gen() {
             true => MongePrim::LowerLeftOnes,
@@ -542,7 +545,7 @@ mod tests {
         for _ in 0..4 {
             for m in sizes.clone().iter() {
                 for n in sizes.clone().iter() {
-                    let matrix = random_monge_matrix(*m, *n, &mut rng);
+                    let matrix: Array2<i32> = random_monge_matrix(*m, *n, &mut rng);
 
                     // Compute and test row minima.
                     let brute_force = brute_force_row_minima(&matrix);
