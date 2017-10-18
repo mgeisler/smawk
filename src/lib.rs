@@ -74,11 +74,14 @@ pub fn recursive_row_minima(matrix: &Array2<i32>) -> Vec<usize> {
 
 /// Compute row-minima in O(*m* + *n*) time.
 ///
-/// Running time on an *m* ✕ *n* matrix: O(*m* + *n*).
+/// This function implements the [SMAWK algorithm] for efficiently
+/// finding row-minima in a totally monotone matrix.
 ///
 /// # Panics
 ///
 /// It is an error to call this on a matrix with zero columns.
+///
+/// [SMAWK algorithm]: https://en.wikipedia.org/wiki/SMAWK_algorithm
 pub fn smawk_row_minima(matrix: &Array2<i32>) -> Vec<usize> {
     fn inner(matrix: &ArrayView2<i32>, rows: &[usize], cols: &[usize], mut minima: &mut [usize]) {
         if rows.is_empty() {
