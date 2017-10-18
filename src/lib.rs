@@ -26,7 +26,7 @@ fn row_minimum(row: ArrayView1<i32>) -> usize {
         .expect("empty row in matrix")
 }
 
-/// Compute row minima by brute force.
+/// Compute row minima in O(*mn*) time.
 ///
 /// Running time on an *m* ✕ *n* matrix: O(*mn*).
 ///
@@ -70,7 +70,7 @@ pub fn recursive_row_minima(matrix: &Array2<i32>) -> Vec<usize> {
     minima
 }
 
-/// Compute row-minima using the SMAWK algorithm.
+/// Compute row-minima in O(*m* + *n*) time.
 ///
 /// Running time on an *m* ✕ *n* matrix: O(*m* + *n*).
 ///
