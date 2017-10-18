@@ -28,7 +28,9 @@ fn row_minimum(row: ArrayView1<i32>) -> usize {
 
 /// Compute row minima in O(*mn*) time.
 ///
-/// Running time on an *m* ✕ *n* matrix: O(*mn*).
+/// This function implements a simple brute-force approach where each
+/// matrix row is scanned completely. This means that the function
+/// works on all matrices, not just Monge matrices.
 ///
 /// # Panics
 ///
