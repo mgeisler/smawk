@@ -41,6 +41,9 @@ pub fn brute_force_row_minima(matrix: &Array2<i32>) -> Vec<usize> {
 
 /// Compute row minima in O(*m* + *n* log *m*) time.
 ///
+/// This function computes row-minima in a totally monotone matrix
+/// using a recursive algorithm.
+///
 /// # Panics
 ///
 /// It is an error to call this on a matrix with zero columns.
