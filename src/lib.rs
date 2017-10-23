@@ -1,5 +1,28 @@
 //! The `smawk` crate provides functions for efficiently finding
 //! row-minima in two-dimensional matrices.
+//!
+//! # Examples
+//!
+//! ```
+//! // Add smawk and ndarray to your crate root.
+//! extern crate smawk;
+//! extern crate ndarray;
+//!
+//! use ndarray::arr2;
+//! use smawk::smawk_row_minima;
+//!
+//! // We can now compute the minimum value in each row:
+//! # fn main() {
+//! let matrix = ndarray::arr2(&[[4, 2, 4, 3],
+//!                              [5, 3, 5, 3],
+//!                              [5, 3, 3, 1]]);
+//! assert_eq!(smawk_row_minima(&matrix),
+//!            vec![1, 1, 3]);
+//! # }
+//! ```
+//!
+//! For brevity, the remaining examples in the documentation will not
+//! show the `extern crate` and `use` statements.
 
 #![doc(html_root_url = "https://docs.rs/smawk/0.1.0")]
 
@@ -32,6 +55,20 @@ fn row_minimum(row: ArrayView1<i32>) -> usize {
 /// matrix row is scanned completely. This means that the function
 /// works on all matrices, not just Monge matrices.
 ///
+/// # Examples
+///
+/// ```
+/// # extern crate smawk;
+/// # extern crate ndarray;
+/// # fn main() {
+/// let matrix = ndarray::arr2(&[[4, 2, 4, 3],
+///                              [5, 3, 5, 3],
+///                              [5, 3, 3, 1]]);
+/// assert_eq!(smawk::brute_force_row_minima(&matrix),
+///            vec![1, 1, 3]);
+/// # }
+/// ```
+///
 /// # Panics
 ///
 /// It is an error to call this on a matrix with zero columns.
@@ -43,6 +80,20 @@ pub fn brute_force_row_minima(matrix: &Array2<i32>) -> Vec<usize> {
 ///
 /// This function computes row-minima in a totally monotone matrix
 /// using a recursive algorithm.
+///
+/// # Examples
+///
+/// ```
+/// # extern crate smawk;
+/// # extern crate ndarray;
+/// # fn main() {
+/// let matrix = ndarray::arr2(&[[4, 2, 4, 3],
+///                              [5, 3, 5, 3],
+///                              [5, 3, 3, 1]]);
+/// assert_eq!(smawk::recursive_row_minima(&matrix),
+///            vec![1, 1, 3]);
+/// # }
+/// ```
 ///
 /// # Panics
 ///
@@ -79,6 +130,20 @@ pub fn recursive_row_minima(matrix: &Array2<i32>) -> Vec<usize> {
 ///
 /// This function implements the [SMAWK algorithm] for efficiently
 /// finding row-minima in a totally monotone matrix.
+///
+/// # Examples
+///
+/// ```
+/// # extern crate smawk;
+/// # extern crate ndarray;
+/// # fn main() {
+/// let matrix = ndarray::arr2(&[[4, 2, 4, 3],
+///                              [5, 3, 5, 3],
+///                              [5, 3, 3, 1]]);
+/// assert_eq!(smawk::smawk_row_minima(&matrix),
+///            vec![1, 1, 3]);
+/// # }
+/// ```
 ///
 /// # Panics
 ///
