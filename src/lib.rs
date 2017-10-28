@@ -34,6 +34,17 @@ pub fn brute_force_row_minima(matrix: &Array2<i32>) -> Vec<usize> {
     matrix.genrows().into_iter().map(lane_minimum).collect()
 }
 
+/// Compute column minima by brute force.
+///
+/// Running time on an *m* ✕ *n* matrix: O(*mn*).
+///
+/// # Panics
+///
+/// It is an error to call this on a matrix with zero rows.
+pub fn brute_force_column_minima(matrix: &Array2<i32>) -> Vec<usize> {
+    matrix.gencolumns().into_iter().map(lane_minimum).collect()
+}
+
 /// Compute row minima in O(*m* + *n* log *m*) time.
 ///
 /// # Panics
@@ -274,6 +285,7 @@ mod tests {
         let matrix = arr2(&[[2]]);
         let minima = vec![0];
         assert_eq!(brute_force_row_minima(&matrix), minima);
+        assert_eq!(brute_force_column_minima(&matrix.reversed_axes()), minima);
     }
 
     #[test]
@@ -281,6 +293,7 @@ mod tests {
         let matrix = arr2(&[[3], [2]]);
         let minima = vec![0, 0];
         assert_eq!(brute_force_row_minima(&matrix), minima);
+        assert_eq!(brute_force_column_minima(&matrix.reversed_axes()), minima);
     }
 
     #[test]
@@ -288,6 +301,7 @@ mod tests {
         let matrix = arr2(&[[2, 1]]);
         let minima = vec![1];
         assert_eq!(brute_force_row_minima(&matrix), minima);
+        assert_eq!(brute_force_column_minima(&matrix.reversed_axes()), minima);
     }
 
     #[test]
@@ -295,6 +309,7 @@ mod tests {
         let matrix = arr2(&[[3, 2], [2, 1]]);
         let minima = vec![1, 1];
         assert_eq!(brute_force_row_minima(&matrix), minima);
+        assert_eq!(brute_force_column_minima(&matrix.reversed_axes()), minima);
     }
 
     #[test]
@@ -302,6 +317,7 @@ mod tests {
         let matrix = arr2(&[[3, 4, 4], [3, 4, 4], [2, 3, 3]]);
         let minima = vec![0, 0, 0];
         assert_eq!(brute_force_row_minima(&matrix), minima);
+        assert_eq!(brute_force_column_minima(&matrix.reversed_axes()), minima);
     }
 
     #[test]
@@ -309,6 +325,7 @@ mod tests {
         let matrix = arr2(&[[4, 5, 5, 5], [2, 3, 3, 3], [2, 3, 3, 3], [2, 2, 2, 2]]);
         let minima = vec![0, 0, 0, 0];
         assert_eq!(brute_force_row_minima(&matrix), minima);
+        assert_eq!(brute_force_column_minima(&matrix.reversed_axes()), minima);
     }
 
     #[test]
@@ -320,6 +337,7 @@ mod tests {
                             [4, 3, 2, 1, 1]]);
         let minima = vec![1, 1, 1, 1, 3];
         assert_eq!(brute_force_row_minima(&matrix), minima);
+        assert_eq!(brute_force_column_minima(&matrix.reversed_axes()), minima);
     }
 
     #[test]
