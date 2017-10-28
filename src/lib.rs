@@ -11,16 +11,16 @@ use ndarray::{Array2, ArrayView1, ArrayView2};
 use num_traits::{NumOps, PrimInt};
 use rand::{Rand, Rng};
 
-/// Compute row minimum by brute force.
+/// Compute lane minimum by brute force.
 ///
-/// This does a simple scan through the row.
+/// This does a simple scan through the lane (row or column).
 #[inline]
-fn row_minimum(row: ArrayView1<i32>) -> usize {
-    row.iter()
+fn lane_minimum(lane: ArrayView1<i32>) -> usize {
+    lane.iter()
         .enumerate()
         .min_by_key(|&(idx, elem)| (elem, idx))
         .map(|(idx, _)| idx)
-        .expect("empty row in matrix")
+        .expect("empty lane in matrix")
 }
 
 /// Compute row minima by brute force.
@@ -31,7 +31,7 @@ fn row_minimum(row: ArrayView1<i32>) -> usize {
 ///
 /// It is an error to call this on a matrix with zero columns.
 pub fn brute_force_row_minima(matrix: &Array2<i32>) -> Vec<usize> {
-    matrix.genrows().into_iter().map(row_minimum).collect()
+    matrix.genrows().into_iter().map(lane_minimum).collect()
 }
 
 /// Compute row minima in O(*m* + *n* log *m*) time.
@@ -46,7 +46,7 @@ pub fn recursive_row_minima(matrix: &Array2<i32>) -> Vec<usize> {
         }
 
         let mid_row = matrix.rows() / 2;
-        let min_idx = row_minimum(matrix.row(mid_row));
+        let min_idx = lane_minimum(matrix.row(mid_row));
         minima[mid_row] = x_offset + min_idx;
 
         if mid_row == 0 {
