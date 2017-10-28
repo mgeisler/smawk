@@ -7,7 +7,7 @@ extern crate rand;
 #[macro_use]
 extern crate rand_derive;
 
-use ndarray::{Array2, ArrayView1, ArrayView2};
+use ndarray::{Array2, ArrayView1, ArrayView2, Axis, Si};
 use num_traits::{NumOps, PrimInt};
 use rand::{Rand, Rng};
 
@@ -52,27 +52,48 @@ pub fn brute_force_column_minima(matrix: &Array2<i32>) -> Vec<usize> {
 /// It is an error to call this on a matrix with zero columns.
 pub fn recursive_row_minima(matrix: &Array2<i32>) -> Vec<usize> {
     let mut minima = vec![0; matrix.rows()];
-    recursive_inner(matrix.view(), 0, &mut minima);
+    recursive_inner(matrix.view(), Axis(0), 0, &mut minima);
     minima
 }
 
-fn recursive_inner(matrix: ArrayView2<i32>, x_offset: usize, minima: &mut [usize]) {
+/// Compute the minima along the given axis (`Axis(0)` for row minima
+/// and `Axis(1)` for column minima).
+fn recursive_inner(matrix: ArrayView2<i32>, axis: Axis, offset: usize, minima: &mut [usize]) {
     if matrix.is_empty() {
         return;
     }
 
-    let mid_row = matrix.rows() / 2;
-    let min_idx = lane_minimum(matrix.row(mid_row));
-    minima[mid_row] = x_offset + min_idx;
+    let mid = matrix.len_of(axis) / 2;
+    let min_idx = lane_minimum(matrix.subview(axis, mid));
+    minima[mid] = offset + min_idx;
 
-    if mid_row == 0 {
-        return; // Matrix has a single row, so we're done.
+    if mid == 0 {
+        return; // Matrix has a single row or column, so we're done.
     }
 
-    let top_left = matrix.slice(s![..mid_row as isize, ..(min_idx + 1) as isize]);
-    let bot_right = matrix.slice(s![(mid_row + 1) as isize.., min_idx as isize..]);
-    recursive_inner(top_left, x_offset, &mut minima[..mid_row]);
-    recursive_inner(bot_right, x_offset + min_idx, &mut minima[mid_row + 1..]);
+    let top_left = if axis.index() == 0 {
+        // Row minima
+        [Si(0, Some(mid as isize), 1),
+         Si(0, Some((min_idx + 1) as isize), 1)]
+    } else {
+        // Column minima
+        [Si(0, Some((min_idx + 1) as isize), 1),
+         Si(0, Some(mid as isize), 1)]
+    };
+    let bot_right = if axis.index() == 0 {
+        // Row minima
+        [Si((mid + 1) as isize, None, 1),
+         Si(min_idx as isize, None, 1)]
+    } else {
+        // Column minima
+        [Si(min_idx as isize, None, 1),
+         Si((mid + 1) as isize, None, 1)]
+    };
+    recursive_inner(matrix.slice(&top_left), axis, offset, &mut minima[..mid]);
+    recursive_inner(matrix.slice(&bot_right),
+                    axis,
+                    offset + min_idx,
+                    &mut minima[mid + 1..]);
 }
 
 /// Compute row-minima using the SMAWK algorithm.
