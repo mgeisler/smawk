@@ -135,62 +135,62 @@ fn recursive_inner<F: Fn() -> Direction>(matrix: ArrayView2<i32>,
 ///
 /// It is an error to call this on a matrix with zero columns.
 pub fn smawk_row_minima(matrix: &Array2<i32>) -> Vec<usize> {
-    fn inner(matrix: &ArrayView2<i32>, rows: &[usize], cols: &[usize], mut minima: &mut [usize]) {
-        if rows.is_empty() {
-            return;
+    let mut minima = vec![0; matrix.rows()];
+    smawk_inner(&matrix.view(),
+                &(0..matrix.rows()).collect::<Vec<_>>(),
+                &(0..matrix.cols()).collect::<Vec<_>>(),
+                &mut minima);
+    minima
+}
+
+fn smawk_inner(matrix: &ArrayView2<i32>, rows: &[usize], cols: &[usize], mut minima: &mut [usize]) {
+    if rows.is_empty() {
+        return;
+    }
+
+    let mut stack = Vec::with_capacity(rows.len());
+    for c in cols {
+        while !stack.is_empty() &&
+              matrix[[rows[stack.len() - 1], stack[stack.len() - 1]]] >
+              matrix[[rows[stack.len() - 1], *c]] {
+            stack.pop();
         }
-
-        let mut stack = Vec::with_capacity(rows.len());
-        for c in cols {
-            while !stack.is_empty() &&
-                  matrix[[rows[stack.len() - 1], stack[stack.len() - 1]]] >
-                  matrix[[rows[stack.len() - 1], *c]] {
-                stack.pop();
-            }
-            if stack.len() != rows.len() {
-                stack.push(*c);
-            }
+        if stack.len() != rows.len() {
+            stack.push(*c);
         }
-        let cols = &stack;
+    }
+    let cols = &stack;
 
-        let mut odd_rows = Vec::with_capacity(1 + rows.len() / 2);
-        for (idx, r) in rows.iter().enumerate() {
-            if idx % 2 == 1 {
-                odd_rows.push(*r);
-            }
-        }
-
-        inner(&matrix, &odd_rows, cols, &mut minima);
-
-        let mut c = 0;
-        for (r, &row) in rows.iter().enumerate() {
-            if r % 2 == 1 {
-                continue;
-            }
-            let mut col = cols[c];
-            let last_col = if r == rows.len() - 1 {
-                cols[cols.len() - 1]
-            } else {
-                minima[rows[r + 1]]
-            };
-            let mut pair = (matrix[[row, col]], col);
-            while col != last_col {
-                c += 1;
-                col = cols[c];
-                pair = std::cmp::min(pair, (matrix[[row, col]], col));
-            }
-            minima[row] = pair.1;
+    let mut odd_rows = Vec::with_capacity(1 + rows.len() / 2);
+    for (idx, r) in rows.iter().enumerate() {
+        if idx % 2 == 1 {
+            odd_rows.push(*r);
         }
     }
 
-    let mut minima = vec![0; matrix.rows()];
-    inner(&matrix.view(),
-          &(0..matrix.rows()).collect::<Vec<_>>(),
-          &(0..matrix.cols()).collect::<Vec<_>>(),
-          &mut minima);
+    smawk_inner(&matrix, &odd_rows, cols, &mut minima);
 
-    minima
+    let mut c = 0;
+    for (r, &row) in rows.iter().enumerate() {
+        if r % 2 == 1 {
+            continue;
+        }
+        let mut col = cols[c];
+        let last_col = if r == rows.len() - 1 {
+            cols[cols.len() - 1]
+        } else {
+            minima[rows[r + 1]]
+        };
+        let mut pair = (matrix[[row, col]], col);
+        while col != last_col {
+            c += 1;
+            col = cols[c];
+            pair = std::cmp::min(pair, (matrix[[row, col]], col));
+        }
+        minima[row] = pair.1;
+    }
 }
+
 
 /// Verify that a matrix is a Monge matrix.
 ///
