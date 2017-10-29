@@ -529,9 +529,9 @@ mod tests {
         assert_eq!(smawk_column_minima(&matrix.reversed_axes()), minima);
     }
 
-    /// Check that the brute_force_row_minima, recursive_row_minima,
-    /// and smawk_row_minima functions give identical results on a
-    /// large number of randomly generated Monge matrices.
+    /// Check that the brute force, recursive, and SMAWK functions
+    /// give identical results on a large number of randomly generated
+    /// Monge matrices.
     #[test]
     fn implementations_agree() {
         let sizes = vec![1, 2, 3, 4, 5, 10, 15, 20, 30];
@@ -540,9 +540,24 @@ mod tests {
             for m in sizes.clone().iter() {
                 for n in sizes.clone().iter() {
                     let matrix = random_monge_matrix(*m, *n, &mut rng);
+
+                    // Compute and test row minima.
                     let brute_force = brute_force_row_minima(&matrix);
                     let recursive = recursive_row_minima(&matrix);
                     let smawk = smawk_row_minima(&matrix);
+                    assert_eq!(brute_force,
+                               recursive,
+                               "recursive and brute force differs on:\n{:?}",
+                               matrix);
+                    assert_eq!(brute_force,
+                               smawk,
+                               "SMAWK and brute force differs on:\n{:?}",
+                               matrix);
+
+                    // Do the same for the column minima.
+                    let brute_force = brute_force_column_minima(&matrix);
+                    let recursive = recursive_column_minima(&matrix);
+                    let smawk = smawk_column_minima(&matrix);
                     assert_eq!(brute_force,
                                recursive,
                                "recursive and brute force differs on:\n{:?}",
