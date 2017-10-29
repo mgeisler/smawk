@@ -143,6 +143,26 @@ pub fn smawk_row_minima(matrix: &Array2<i32>) -> Vec<usize> {
     minima
 }
 
+/// Compute column-minima using the SMAWK algorithm.
+///
+/// Running time on an *m* ✕ *n* matrix: O(*m* + *n*).
+///
+/// # Panics
+///
+/// It is an error to call this on a matrix with zero rows.
+pub fn smawk_column_minima(matrix: &Array2<i32>) -> Vec<usize> {
+    // Benchmarking shows that SMAWK performs roughly the same on row-
+    // and column-major matrices.
+    let mut minima = vec![0; matrix.cols()];
+    smawk_inner(&matrix.t(),
+                &(0..matrix.cols()).collect::<Vec<_>>(),
+                &(0..matrix.rows()).collect::<Vec<_>>(),
+                &mut minima);
+    minima
+}
+
+/// Compute row minima in the given area of the matrix. The `minima`
+/// slice is updated inplace.
 fn smawk_inner(matrix: &ArrayView2<i32>, rows: &[usize], cols: &[usize], mut minima: &mut [usize]) {
     if rows.is_empty() {
         return;
@@ -454,6 +474,7 @@ mod tests {
         let matrix = arr2(&[[2]]);
         let minima = vec![0];
         assert_eq!(smawk_row_minima(&matrix), minima);
+        assert_eq!(smawk_column_minima(&matrix.reversed_axes()), minima);
     }
 
     #[test]
@@ -461,6 +482,7 @@ mod tests {
         let matrix = arr2(&[[3], [2]]);
         let minima = vec![0, 0];
         assert_eq!(smawk_row_minima(&matrix), minima);
+        assert_eq!(smawk_column_minima(&matrix.reversed_axes()), minima);
     }
 
     #[test]
@@ -468,6 +490,7 @@ mod tests {
         let matrix = arr2(&[[2, 1]]);
         let minima = vec![1];
         assert_eq!(smawk_row_minima(&matrix), minima);
+        assert_eq!(smawk_column_minima(&matrix.reversed_axes()), minima);
     }
 
     #[test]
@@ -475,6 +498,7 @@ mod tests {
         let matrix = arr2(&[[3, 2], [2, 1]]);
         let minima = vec![1, 1];
         assert_eq!(smawk_row_minima(&matrix), minima);
+        assert_eq!(smawk_column_minima(&matrix.reversed_axes()), minima);
     }
 
     #[test]
@@ -482,6 +506,7 @@ mod tests {
         let matrix = arr2(&[[3, 4, 4], [3, 4, 4], [2, 3, 3]]);
         let minima = vec![0, 0, 0];
         assert_eq!(smawk_row_minima(&matrix), minima);
+        assert_eq!(smawk_column_minima(&matrix.reversed_axes()), minima);
     }
 
     #[test]
@@ -489,6 +514,7 @@ mod tests {
         let matrix = arr2(&[[4, 5, 5, 5], [2, 3, 3, 3], [2, 3, 3, 3], [2, 2, 2, 2]]);
         let minima = vec![0, 0, 0, 0];
         assert_eq!(smawk_row_minima(&matrix), minima);
+        assert_eq!(smawk_column_minima(&matrix.reversed_axes()), minima);
     }
 
     #[test]
@@ -500,6 +526,7 @@ mod tests {
                             [4, 3, 2, 1, 1]]);
         let minima = vec![1, 1, 1, 1, 3];
         assert_eq!(smawk_row_minima(&matrix), minima);
+        assert_eq!(smawk_column_minima(&matrix.reversed_axes()), minima);
     }
 
     /// Check that the brute_force_row_minima, recursive_row_minima,
