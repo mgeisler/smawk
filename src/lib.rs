@@ -52,7 +52,7 @@ pub fn brute_force_column_minima(matrix: &Array2<i32>) -> Vec<usize> {
 /// It is an error to call this on a matrix with zero columns.
 pub fn recursive_row_minima(matrix: &Array2<i32>) -> Vec<usize> {
     let mut minima = vec![0; matrix.rows()];
-    recursive_inner(matrix.view(), Axis(0), 0, &mut minima);
+    recursive_inner(matrix.view(), &|| Direction::Row, 0, &mut minima);
     minima
 }
 
@@ -63,17 +63,35 @@ pub fn recursive_row_minima(matrix: &Array2<i32>) -> Vec<usize> {
 /// It is an error to call this on a matrix with zero rows.
 pub fn recursive_column_minima(matrix: &Array2<i32>) -> Vec<usize> {
     let mut minima = vec![0; matrix.cols()];
-    recursive_inner(matrix.view(), Axis(1), 0, &mut minima);
+    recursive_inner(matrix.view(), &|| Direction::Column, 0, &mut minima);
     minima
 }
 
-/// Compute the minima along the given axis (`Axis(0)` for row minima
-/// and `Axis(1)` for column minima).
-fn recursive_inner(matrix: ArrayView2<i32>, axis: Axis, offset: usize, minima: &mut [usize]) {
+/// The type of minima (row or column) we compute.
+enum Direction {
+    Row,
+    Column,
+}
+
+/// Compute the minima along the given direction (`Direction::Row` for
+/// row minima and `Direction::Column` for column minima).
+///
+/// The direction is given as a generic function argument to allow
+/// monomorphization to kick in. The function calls will be inlined
+/// and optimized away and the result is that the compiler generates
+/// differnet code for finding row and column minima.
+fn recursive_inner<F: Fn() -> Direction>(matrix: ArrayView2<i32>,
+                                         dir: &F,
+                                         offset: usize,
+                                         minima: &mut [usize]) {
     if matrix.is_empty() {
         return;
     }
 
+    let axis = match dir() {
+        Direction::Row => Axis(0),
+        Direction::Column => Axis(1),
+    };
     let mid = matrix.len_of(axis) / 2;
     let min_idx = lane_minimum(matrix.subview(axis, mid));
     minima[mid] = offset + min_idx;
@@ -82,27 +100,29 @@ fn recursive_inner(matrix: ArrayView2<i32>, axis: Axis, offset: usize, minima: &
         return; // Matrix has a single row or column, so we're done.
     }
 
-    let top_left = if axis.index() == 0 {
-        // Row minima
-        [Si(0, Some(mid as isize), 1),
-         Si(0, Some((min_idx + 1) as isize), 1)]
-    } else {
-        // Column minima
-        [Si(0, Some((min_idx + 1) as isize), 1),
-         Si(0, Some(mid as isize), 1)]
+    let top_left = match dir() {
+        Direction::Row => {
+            [Si(0, Some(mid as isize), 1),
+             Si(0, Some((min_idx + 1) as isize), 1)]
+        }
+        Direction::Column => {
+            [Si(0, Some((min_idx + 1) as isize), 1),
+             Si(0, Some(mid as isize), 1)]
+        }
     };
-    let bot_right = if axis.index() == 0 {
-        // Row minima
-        [Si((mid + 1) as isize, None, 1),
-         Si(min_idx as isize, None, 1)]
-    } else {
-        // Column minima
-        [Si(min_idx as isize, None, 1),
-         Si((mid + 1) as isize, None, 1)]
+    let bot_right = match dir() {
+        Direction::Row => {
+            [Si((mid + 1) as isize, None, 1),
+             Si(min_idx as isize, None, 1)]
+        }
+        Direction::Column => {
+            [Si(min_idx as isize, None, 1),
+             Si((mid + 1) as isize, None, 1)]
+        }
     };
-    recursive_inner(matrix.slice(&top_left), axis, offset, &mut minima[..mid]);
+    recursive_inner(matrix.slice(&top_left), dir, offset, &mut minima[..mid]);
     recursive_inner(matrix.slice(&bot_right),
-                    axis,
+                    dir,
                     offset + min_idx,
                     &mut minima[mid + 1..]);
 }
