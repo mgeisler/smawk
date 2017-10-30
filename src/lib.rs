@@ -15,7 +15,7 @@ use rand::{Rand, Rng};
 ///
 /// This does a simple scan through the lane (row or column).
 #[inline]
-fn lane_minimum(lane: ArrayView1<i32>) -> usize {
+fn lane_minimum<T: Ord>(lane: ArrayView1<T>) -> usize {
     lane.iter()
         .enumerate()
         .min_by_key(|&(idx, elem)| (elem, idx))
@@ -30,7 +30,7 @@ fn lane_minimum(lane: ArrayView1<i32>) -> usize {
 /// # Panics
 ///
 /// It is an error to call this on a matrix with zero columns.
-pub fn brute_force_row_minima(matrix: &Array2<i32>) -> Vec<usize> {
+pub fn brute_force_row_minima<T: Ord>(matrix: &Array2<T>) -> Vec<usize> {
     matrix.genrows().into_iter().map(lane_minimum).collect()
 }
 
@@ -41,7 +41,7 @@ pub fn brute_force_row_minima(matrix: &Array2<i32>) -> Vec<usize> {
 /// # Panics
 ///
 /// It is an error to call this on a matrix with zero rows.
-pub fn brute_force_column_minima(matrix: &Array2<i32>) -> Vec<usize> {
+pub fn brute_force_column_minima<T: Ord>(matrix: &Array2<T>) -> Vec<usize> {
     matrix.gencolumns().into_iter().map(lane_minimum).collect()
 }
 
@@ -50,7 +50,7 @@ pub fn brute_force_column_minima(matrix: &Array2<i32>) -> Vec<usize> {
 /// # Panics
 ///
 /// It is an error to call this on a matrix with zero columns.
-pub fn recursive_row_minima(matrix: &Array2<i32>) -> Vec<usize> {
+pub fn recursive_row_minima<T: Ord>(matrix: &Array2<T>) -> Vec<usize> {
     let mut minima = vec![0; matrix.rows()];
     recursive_inner(matrix.view(), &|| Direction::Row, 0, &mut minima);
     minima
@@ -61,7 +61,7 @@ pub fn recursive_row_minima(matrix: &Array2<i32>) -> Vec<usize> {
 /// # Panics
 ///
 /// It is an error to call this on a matrix with zero rows.
-pub fn recursive_column_minima(matrix: &Array2<i32>) -> Vec<usize> {
+pub fn recursive_column_minima<T: Ord>(matrix: &Array2<T>) -> Vec<usize> {
     let mut minima = vec![0; matrix.cols()];
     recursive_inner(matrix.view(), &|| Direction::Column, 0, &mut minima);
     minima
@@ -80,10 +80,10 @@ enum Direction {
 /// monomorphization to kick in. The function calls will be inlined
 /// and optimized away and the result is that the compiler generates
 /// differnet code for finding row and column minima.
-fn recursive_inner<F: Fn() -> Direction>(matrix: ArrayView2<i32>,
-                                         dir: &F,
-                                         offset: usize,
-                                         minima: &mut [usize]) {
+fn recursive_inner<T: Ord, F: Fn() -> Direction>(matrix: ArrayView2<T>,
+                                                 dir: &F,
+                                                 offset: usize,
+                                                 minima: &mut [usize]) {
     if matrix.is_empty() {
         return;
     }
@@ -134,7 +134,7 @@ fn recursive_inner<F: Fn() -> Direction>(matrix: ArrayView2<i32>,
 /// # Panics
 ///
 /// It is an error to call this on a matrix with zero columns.
-pub fn smawk_row_minima(matrix: &Array2<i32>) -> Vec<usize> {
+pub fn smawk_row_minima<T: Ord>(matrix: &Array2<T>) -> Vec<usize> {
     let mut minima = vec![0; matrix.rows()];
     smawk_inner(&matrix.view(),
                 &(0..matrix.rows()).collect::<Vec<_>>(),
@@ -150,7 +150,7 @@ pub fn smawk_row_minima(matrix: &Array2<i32>) -> Vec<usize> {
 /// # Panics
 ///
 /// It is an error to call this on a matrix with zero rows.
-pub fn smawk_column_minima(matrix: &Array2<i32>) -> Vec<usize> {
+pub fn smawk_column_minima<T: Ord>(matrix: &Array2<T>) -> Vec<usize> {
     // Benchmarking shows that SMAWK performs roughly the same on row-
     // and column-major matrices.
     let mut minima = vec![0; matrix.cols()];
@@ -163,7 +163,10 @@ pub fn smawk_column_minima(matrix: &Array2<i32>) -> Vec<usize> {
 
 /// Compute row minima in the given area of the matrix. The `minima`
 /// slice is updated inplace.
-fn smawk_inner(matrix: &ArrayView2<i32>, rows: &[usize], cols: &[usize], mut minima: &mut [usize]) {
+fn smawk_inner<T: Ord>(matrix: &ArrayView2<T>,
+                       rows: &[usize],
+                       cols: &[usize],
+                       mut minima: &mut [usize]) {
     if rows.is_empty() {
         return;
     }
@@ -201,11 +204,11 @@ fn smawk_inner(matrix: &ArrayView2<i32>, rows: &[usize], cols: &[usize], mut min
         } else {
             minima[rows[r + 1]]
         };
-        let mut pair = (matrix[[row, col]], col);
+        let mut pair = (&matrix[[row, col]], col);
         while col != last_col {
             c += 1;
             col = cols[c];
-            pair = std::cmp::min(pair, (matrix[[row, col]], col));
+            pair = std::cmp::min(pair, (&matrix[[row, col]], col));
         }
         minima[row] = pair.1;
     }
@@ -280,8 +283,11 @@ impl MongePrim {
 }
 
 /// Generate a random Monge matrix.
-pub fn random_monge_matrix<R: Rng>(m: usize, n: usize, rng: &mut R) -> Array2<i32> {
-    let mut matrix = Array2::from_elem((m, n), 0);
+pub fn random_monge_matrix<R: Rng, T>(m: usize, n: usize, rng: &mut R) -> Array2<T>
+where
+    T: Rand + PrimInt,
+{
+    let mut matrix = Array2::from_elem((m, n), T::zero());
     for _ in 0..(m + n) {
         let tmp = match rng.gen() {
             true => MongePrim::LowerLeftOnes,
@@ -539,7 +545,7 @@ mod tests {
         for _ in 0..4 {
             for m in sizes.clone().iter() {
                 for n in sizes.clone().iter() {
-                    let matrix = random_monge_matrix(*m, *n, &mut rng);
+                    let matrix: Array2<i32> = random_monge_matrix(*m, *n, &mut rng);
 
                     // Compute and test row minima.
                     let brute_force = brute_force_row_minima(&matrix);
