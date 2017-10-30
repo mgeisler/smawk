@@ -5,42 +5,50 @@ extern crate rand;
 extern crate smawk;
 extern crate test;
 
-use ndarray::Array2;
 use rand::XorShiftRng;
 use test::Bencher;
 
 macro_rules! repeat {
-    ([ $( ($func:ident, $size:expr) $(,)* )* ], $body:expr) => {
+    ([ $( ($row_bench:ident, $column_bench:ident, $size:expr) $(,)* )* ],
+     $row_func:path, $column_func:path) => {
         $(
             #[bench]
-            fn $func(b: &mut Bencher) {
+            fn $row_bench(b: &mut Bencher) {
                 let mut rng = XorShiftRng::new_unseeded();
                 let matrix = smawk::random_monge_matrix($size, $size, &mut rng);
-                b.iter(|| $body(&matrix));
+                b.iter(|| $row_func(&matrix));
+            }
+
+            #[bench]
+            fn $column_bench(b: &mut Bencher) {
+                let mut rng = XorShiftRng::new_unseeded();
+                let matrix = smawk::random_monge_matrix($size, $size, &mut rng).reversed_axes();
+                b.iter(|| $column_func(&matrix));
             }
         )*
     };
 }
 
-repeat!([(brute_force_025, 25),
-         (brute_force_050, 50),
-         (brute_force_100, 100),
-         (brute_force_200, 200),
-         (brute_force_400, 400)],
-        |matrix: &Array2<i32>| smawk::brute_force_row_minima(&matrix));
+repeat!([(row_brute_force_025, column_brute_force_025, 25),
+         (row_brute_force_050, column_brute_force_050, 50),
+         (row_brute_force_100, column_brute_force_100, 100),
+         (row_brute_force_200, column_brute_force_200, 200),
+         (row_brute_force_400, column_brute_force_400, 400)],
+        smawk::brute_force_row_minima,
+        smawk::brute_force_column_minima);
 
-repeat!([(recursive_0025, 25),
-         (recursive_0050, 50),
-         (recursive_0100, 100),
-         (recursive_0200, 200),
-         (recursive_0400, 400),
-         (recursive_0800, 800)],
-        |matrix: &Array2<i32>| smawk::recursive_row_minima(&matrix));
+repeat!([(row_recursive_025, column_recursive_025, 25),
+         (row_recursive_050, column_recursive_050, 50),
+         (row_recursive_100, column_recursive_100, 100),
+         (row_recursive_200, column_recursive_200, 200),
+         (row_recursive_400, column_recursive_400, 400)],
+        smawk::recursive_row_minima,
+        smawk::recursive_column_minima);
 
-repeat!([(smawk_025, 25),
-         (smawk_050, 50),
-         (smawk_100, 100),
-         (smawk_200, 200),
-         (smawk_400, 400),
-         (smawk_800, 800)],
-        |matrix: &Array2<i32>| smawk::smawk_row_minima(&matrix));
+repeat!([(row_smawk_025, column_smawk_025, 25),
+         (row_smawk_050, column_smawk_050, 50),
+         (row_smawk_100, column_smawk_100, 100),
+         (row_smawk_200, column_smawk_200, 200),
+         (row_smawk_400, column_smawk_400, 400)],
+        smawk::smawk_row_minima,
+        smawk::smawk_column_minima);
