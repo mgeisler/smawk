@@ -524,12 +524,12 @@ where
 {
     let mut matrix = Array2::from_elem((m, n), T::zero());
     for _ in 0..(m + n) {
-        let tmp = if rng.gen() {
+        let monge = if rng.gen() {
             MongePrim::LowerLeftOnes
         } else {
             MongePrim::UpperRightOnes
-        }.to_matrix(m, n, rng);
-        matrix = matrix + tmp;
+        };
+        matrix = matrix + monge.to_matrix(m, n, rng);
     }
     matrix
 }
