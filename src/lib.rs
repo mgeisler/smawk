@@ -243,6 +243,122 @@ fn smawk_inner<T: Ord + Copy, M: Fn(usize, usize) -> T>(
     }
 }
 
+/// Compute upper-right column minima in O(*m* + *n*) time.
+///
+/// The input matrix must be totally monotone.
+///
+/// The function returns a vector of `(usize, i32)` tuples. The
+/// `usize` in the tuple at index `j` tells you the row of the minimum
+/// value in column `j` and the `i32` value is minimum value itself.
+///
+/// The algorithm only considers values above the main diagonal, which
+/// means that it computes values `v(j)` where:
+///
+/// ```text
+/// v(0) = initial
+/// v(j) = min { M[i, j] | i < j } for j > 0
+/// ```
+///
+/// If we let `r(j)` denote the row index of the minimum value in
+/// column `j`, the tuples in the result vector become `(r(j), M[r(j),
+/// j])`.
+///
+/// The algorithm is an *online* algorithm, in the sense that `matrix`
+/// function can refer back to previously computed column minima when
+/// determining an entry in the matrix. The guarantee is that we only
+/// call `matrix(i, j)` after having computed `v(i)`. This is
+/// reflected in the `&[(usize, i32)]` argument to `matrix`, which
+/// grows as more and more values are computed.
+pub fn online_column_minima<M: Fn(&[(usize, i32)], usize, usize) -> i32>(
+    initial: i32,
+    size: usize,
+    matrix: M,
+) -> Vec<(usize, i32)> {
+    let mut result = vec![(0, initial)];
+
+    // State used by the algorithm.
+    let mut finished = 0;
+    let mut base = 0;
+    let mut tentative = 0;
+
+    // Shorthand for evaluating the matrix. We need a macro here since
+    // we don't want to borrow the result vector.
+    macro_rules! m {
+        ($i:expr, $j:expr) => {{
+            assert!(
+                $i < size && $j < size,
+                "index out of bounds: ({}, {}), matrix size: {}",
+                $i,
+                $j,
+                size
+            );
+            matrix(&result[..finished + 1], $i, $j)
+        }};
+    }
+
+    // Keep going until we have finished all size columns. Since the
+    // columns are zero-indexed, we're done when finished == size - 1.
+    while finished < size - 1 {
+        // First case: we have already advanced past the previous
+        // tentative value. We make a new tentative value by applying
+        // smawk_inner to the largest square submatrix that fits under
+        // the base.
+        let i = finished + 1;
+        if i > tentative {
+            let rows = (base..finished + 1).collect::<Vec<_>>();
+            tentative = std::cmp::min(finished + rows.len(), size - 1);
+            let cols = (finished + 1..tentative + 1).collect::<Vec<_>>();
+            let mut minima = vec![0; tentative + 1];
+            smawk_inner(&|i, j| m![i, j], &rows, &cols, &mut minima);
+            for col in cols {
+                let row = minima[col];
+                let v = m![row, col];
+                if col >= result.len() {
+                    result.push((row, v));
+                } else if v < result[col].1 {
+                    result[col] = (row, v);
+                }
+            }
+            finished = i;
+            continue;
+        }
+
+        // Second case: the new column minimum is on the diagonal. All
+        // subsequent ones will be at least as low, so we can clear
+        // out all our work from higher rows. As in the fourth case,
+        // the loss of tentative is amortized against the increase in
+        // base.
+        let diag = m![i - 1, i];
+        if diag < result[i].1 {
+            result[i] = (i - 1, diag);
+            base = i - 1;
+            tentative = i;
+            finished = i;
+            continue;
+        }
+
+        // Third case: row i-1 does not supply a column minimum in any
+        // column up to tentative. We simply advance finished while
+        // maintaining the invariant.
+        if m![i - 1, tentative] >= result[tentative].1 {
+            finished = i;
+            continue;
+        }
+
+        // Fourth and final case: a new column minimum at tentative.
+        // This allows us to make progress by incorporating rows prior
+        // to finished into the base. The base invariant holds because
+        // these rows cannot supply any later column minima. The work
+        // done when we last advanced tentative (and undone by this
+        // step) can be amortized against the increase in base.
+        base = i - 1;
+        tentative = i;
+        finished = i;
+    }
+
+    result
+}
+
 /// Verify that a matrix is a Monge matrix.
 ///
 /// A [Monge matrix] \(or array) is a matrix where the following
@@ -629,4 +745,42 @@ mod tests {
             }
         }
     }
+
+    #[test]
+    fn concave_online() {
+        let mut rng = XorShiftRng::new_unseeded();
+        let matrix: Array2<i32> = random_monge_matrix(15, 15, &mut rng);
+
+        println!();
+        if matrix.rows() < 25 {
+            println!("{:2?}", matrix);
+        }
+        println!("is Monge? {:?}", is_monge(&matrix));
+        println!();
+
+        for size in 1..matrix.rows() + 1 {
+            let count = std::cell::RefCell::new(0);
+            let minima = online_column_minima(99, size, |values, i, j| {
+                println!(
+                    "- evaluating ({}, {}) -> {:?}, values: {:?}",
+                    i,
+                    j,
+                    matrix.get([i, j]),
+                    values
+                );
+                *count.borrow_mut() += 1;
+                matrix[[i, j]]
+            });
+
+            println!("minima: {:?}", minima);
+            let c = count.into_inner();
+            println!(
+                "evaluations: {:4} -> {:4} (x{:6.2})",
+                size,
+                c,
+                c as f64 / size as f64
+            );
+        }
+    }
+
 }
