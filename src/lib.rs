@@ -149,11 +149,13 @@ fn recursive_inner<T: Ord, F: Fn() -> Direction>(
 ///
 /// It is an error to call this on a matrix with zero columns.
 pub fn smawk_row_minima<T: Ord + Copy>(matrix: &Array2<T>) -> Vec<usize> {
+    // Benchmarking shows that SMAWK performs roughly the same on row-
+    // and column-major matrices.
     let mut minima = vec![0; matrix.rows()];
     smawk_inner(
-        &|i, j| matrix[[i, j]],
-        &(0..matrix.rows()).collect::<Vec<_>>(),
+        &|j, i| matrix[[i, j]],
         &(0..matrix.cols()).collect::<Vec<_>>(),
+        &(0..matrix.rows()).collect::<Vec<_>>(),
         &mut minima,
     );
     minima
@@ -177,68 +179,67 @@ pub fn smawk_row_minima<T: Ord + Copy>(matrix: &Array2<T>) -> Vec<usize> {
 ///
 /// It is an error to call this on a matrix with zero rows.
 pub fn smawk_column_minima<T: Ord + Copy>(matrix: &Array2<T>) -> Vec<usize> {
-    // Benchmarking shows that SMAWK performs roughly the same on row-
-    // and column-major matrices.
     let mut minima = vec![0; matrix.cols()];
     smawk_inner(
-        &|i, j| matrix[[j, i]],
-        &(0..matrix.cols()).collect::<Vec<_>>(),
+        &|i, j| matrix[[i, j]],
         &(0..matrix.rows()).collect::<Vec<_>>(),
+        &(0..matrix.cols()).collect::<Vec<_>>(),
         &mut minima,
     );
     minima
 }
 
-/// Compute row minima in the given area of the matrix. The `minima`
-/// slice is updated inplace.
+/// Compute column minima in the given area of the matrix. The
+/// `minima` slice is updated inplace.
 fn smawk_inner<T: Ord + Copy, M: Fn(usize, usize) -> T>(
     matrix: &M,
     rows: &[usize],
     cols: &[usize],
     mut minima: &mut [usize],
 ) {
-    if rows.is_empty() {
+    if cols.is_empty() {
         return;
     }
 
-    let mut stack = Vec::with_capacity(rows.len());
-    for c in cols {
+    let mut stack = Vec::with_capacity(cols.len());
+    for r in rows {
+        // TODO: use stack.last() instead of stack.is_empty() etc
         while !stack.is_empty()
-            && matrix(rows[stack.len() - 1], stack[stack.len() - 1])
-                > matrix(rows[stack.len() - 1], *c)
+            && matrix(stack[stack.len() - 1], cols[stack.len() - 1])
+                > matrix(*r, cols[stack.len() - 1])
         {
             stack.pop();
         }
-        if stack.len() != rows.len() {
-            stack.push(*c);
+        if stack.len() != cols.len() {
+            stack.push(*r);
         }
     }
-    let cols = &stack;
+    let rows = &stack;
 
-    let mut odd_rows = Vec::with_capacity(1 + rows.len() / 2);
-    for (idx, r) in rows.iter().enumerate() {
+    let mut odd_cols = Vec::with_capacity(1 + cols.len() / 2);
+    for (idx, c) in cols.iter().enumerate() {
         if idx % 2 == 1 {
-            odd_rows.push(*r);
+            odd_cols.push(*c);
         }
     }
 
-    smawk_inner(matrix, &odd_rows, cols, &mut minima);
+    smawk_inner(matrix, rows, &odd_cols, &mut minima);
 
-    let mut c = 0;
-    for (r, &row) in rows.iter().enumerate().filter(|(r, _)| r % 2 == 0) {
-        let mut col = cols[c];
-        let last_col = if r == rows.len() - 1 {
-            cols[cols.len() - 1]
+    let mut r = 0;
+    for (c, &col) in cols.iter().enumerate().filter(|(c, _)| c % 2 == 0) {
+        let mut row = rows[r];
+        let last_row = if c == cols.len() - 1 {
+            rows[rows.len() - 1]
         } else {
-            minima[rows[r + 1]]
+            minima[cols[c + 1]]
         };
-        let mut pair = (matrix(row, col), col);
-        while col != last_col {
-            c += 1;
-            col = cols[c];
-            pair = std::cmp::min(pair, (matrix(row, col), col));
+        let mut pair = (matrix(row, col), row);
+        while row != last_row {
+            r += 1;
+            row = rows[r];
+            pair = std::cmp::min(pair, (matrix(row, col), row));
         }
-        minima[row] = pair.1;
+        minima[col] = pair.1;
     }
 }
 
