@@ -5,6 +5,7 @@ extern crate rand;
 extern crate smawk;
 extern crate test;
 
+use ndarray::Array2;
 use rand::XorShiftRng;
 use test::Bencher;
 
@@ -15,14 +16,14 @@ macro_rules! repeat {
             #[bench]
             fn $row_bench(b: &mut Bencher) {
                 let mut rng = XorShiftRng::new_unseeded();
-                let matrix = smawk::random_monge_matrix($size, $size, &mut rng);
+                let matrix: Array2<i32> = smawk::random_monge_matrix($size, $size, &mut rng);
                 b.iter(|| $row_func(&matrix));
             }
 
             #[bench]
             fn $column_bench(b: &mut Bencher) {
                 let mut rng = XorShiftRng::new_unseeded();
-                let matrix = smawk::random_monge_matrix($size, $size, &mut rng).reversed_axes();
+                let matrix: Array2<i32> = smawk::random_monge_matrix($size, $size, &mut rng).reversed_axes();
                 b.iter(|| $column_func(&matrix));
             }
         )*
