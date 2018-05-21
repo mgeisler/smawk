@@ -225,10 +225,7 @@ fn smawk_inner<T: Ord>(
     smawk_inner(&matrix, &odd_rows, cols, &mut minima);
 
     let mut c = 0;
-    for (r, &row) in rows.iter().enumerate() {
-        if r % 2 == 1 {
-            continue;
-        }
+    for (r, &row) in rows.iter().enumerate().filter(|(r, _)| r % 2 == 0) {
         let mut col = cols[c];
         let last_col = if r == rows.len() - 1 {
             cols[cols.len() - 1]
