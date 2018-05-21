@@ -131,7 +131,17 @@ fn recursive_inner<T: Ord, F: Fn() -> Direction>(
     );
 }
 
-/// Compute row-minima using the SMAWK algorithm.
+/// Compute row minima in O(*m* + *n*) time.
+///
+/// This implements the SMAWK algorithm for finding row minima in a
+/// totally monotone matrix.
+///
+/// The SMAWK algorithm is from Agarwal, Klawe, Moran, Shor, and
+/// Wilbur, *Geometric applications of a matrix searching algorithm*,
+/// Algorithmica 2, pp. 195-208 (1987) and the code here is a
+/// translation [David Eppstein's Python code][pads].
+///
+/// [pads]: https://github.com/jfinkels/PADS/blob/master/pads/smawk.py
 ///
 /// Running time on an *m* ✕ *n* matrix: O(*m* + *n*).
 ///
@@ -149,7 +159,17 @@ pub fn smawk_row_minima<T: Ord>(matrix: &Array2<T>) -> Vec<usize> {
     minima
 }
 
-/// Compute column-minima using the SMAWK algorithm.
+/// Compute column minima in O(*m* + *n*) time.
+///
+/// This implements the SMAWK algorithm for finding column minima in a
+/// totally monotone matrix.
+///
+/// The SMAWK algorithm is from Agarwal, Klawe, Moran, Shor, and
+/// Wilbur, *Geometric applications of a matrix searching algorithm*,
+/// Algorithmica 2, pp. 195-208 (1987) and the code here is a
+/// translation [David Eppstein's Python code][pads].
+///
+/// [pads]: https://github.com/jfinkels/PADS/blob/master/pads/smawk.py
 ///
 /// Running time on an *m* ✕ *n* matrix: O(*m* + *n*).
 ///
