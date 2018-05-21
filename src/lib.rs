@@ -231,7 +231,7 @@ fn smawk_inner<T: Ord>(
 /// inequality holds:
 ///
 /// ```text
-/// M[i, j] + M[i', j'] <= M[i, j'] + M[i, j']  for all i < i', j < j'
+/// M[i, j] + M[i', j'] <= M[i, j'] + M[i', j]  for all i < i', j < j'
 /// ```
 ///
 /// The inequality says that the sum of the main diagonal is less than
