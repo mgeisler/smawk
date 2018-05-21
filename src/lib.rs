@@ -80,10 +80,12 @@ enum Direction {
 /// monomorphization to kick in. The function calls will be inlined
 /// and optimized away and the result is that the compiler generates
 /// differnet code for finding row and column minima.
-fn recursive_inner<T: Ord, F: Fn() -> Direction>(matrix: ArrayView2<T>,
-                                                 dir: &F,
-                                                 offset: usize,
-                                                 minima: &mut [usize]) {
+fn recursive_inner<T: Ord, F: Fn() -> Direction>(
+    matrix: ArrayView2<T>,
+    dir: &F,
+    offset: usize,
+    minima: &mut [usize],
+) {
     if matrix.is_empty() {
         return;
     }
@@ -101,30 +103,32 @@ fn recursive_inner<T: Ord, F: Fn() -> Direction>(matrix: ArrayView2<T>,
     }
 
     let top_left = match dir() {
-        Direction::Row => {
-            [Si(0, Some(mid as isize), 1),
-             Si(0, Some((min_idx + 1) as isize), 1)]
-        }
-        Direction::Column => {
-            [Si(0, Some((min_idx + 1) as isize), 1),
-             Si(0, Some(mid as isize), 1)]
-        }
+        Direction::Row => [
+            Si(0, Some(mid as isize), 1),
+            Si(0, Some((min_idx + 1) as isize), 1),
+        ],
+        Direction::Column => [
+            Si(0, Some((min_idx + 1) as isize), 1),
+            Si(0, Some(mid as isize), 1),
+        ],
     };
     let bot_right = match dir() {
-        Direction::Row => {
-            [Si((mid + 1) as isize, None, 1),
-             Si(min_idx as isize, None, 1)]
-        }
-        Direction::Column => {
-            [Si(min_idx as isize, None, 1),
-             Si((mid + 1) as isize, None, 1)]
-        }
+        Direction::Row => [
+            Si((mid + 1) as isize, None, 1),
+            Si(min_idx as isize, None, 1),
+        ],
+        Direction::Column => [
+            Si(min_idx as isize, None, 1),
+            Si((mid + 1) as isize, None, 1),
+        ],
     };
     recursive_inner(matrix.slice(&top_left), dir, offset, &mut minima[..mid]);
-    recursive_inner(matrix.slice(&bot_right),
-                    dir,
-                    offset + min_idx,
-                    &mut minima[mid + 1..]);
+    recursive_inner(
+        matrix.slice(&bot_right),
+        dir,
+        offset + min_idx,
+        &mut minima[mid + 1..],
+    );
 }
 
 /// Compute row-minima using the SMAWK algorithm.
@@ -136,10 +140,12 @@ fn recursive_inner<T: Ord, F: Fn() -> Direction>(matrix: ArrayView2<T>,
 /// It is an error to call this on a matrix with zero columns.
 pub fn smawk_row_minima<T: Ord>(matrix: &Array2<T>) -> Vec<usize> {
     let mut minima = vec![0; matrix.rows()];
-    smawk_inner(&matrix.view(),
-                &(0..matrix.rows()).collect::<Vec<_>>(),
-                &(0..matrix.cols()).collect::<Vec<_>>(),
-                &mut minima);
+    smawk_inner(
+        &matrix.view(),
+        &(0..matrix.rows()).collect::<Vec<_>>(),
+        &(0..matrix.cols()).collect::<Vec<_>>(),
+        &mut minima,
+    );
     minima
 }
 
@@ -154,28 +160,33 @@ pub fn smawk_column_minima<T: Ord>(matrix: &Array2<T>) -> Vec<usize> {
     // Benchmarking shows that SMAWK performs roughly the same on row-
     // and column-major matrices.
     let mut minima = vec![0; matrix.cols()];
-    smawk_inner(&matrix.t(),
-                &(0..matrix.cols()).collect::<Vec<_>>(),
-                &(0..matrix.rows()).collect::<Vec<_>>(),
-                &mut minima);
+    smawk_inner(
+        &matrix.t(),
+        &(0..matrix.cols()).collect::<Vec<_>>(),
+        &(0..matrix.rows()).collect::<Vec<_>>(),
+        &mut minima,
+    );
     minima
 }
 
 /// Compute row minima in the given area of the matrix. The `minima`
 /// slice is updated inplace.
-fn smawk_inner<T: Ord>(matrix: &ArrayView2<T>,
-                       rows: &[usize],
-                       cols: &[usize],
-                       mut minima: &mut [usize]) {
+fn smawk_inner<T: Ord>(
+    matrix: &ArrayView2<T>,
+    rows: &[usize],
+    cols: &[usize],
+    mut minima: &mut [usize],
+) {
     if rows.is_empty() {
         return;
     }
 
     let mut stack = Vec::with_capacity(rows.len());
     for c in cols {
-        while !stack.is_empty() &&
-              matrix[[rows[stack.len() - 1], stack[stack.len() - 1]]] >
-              matrix[[rows[stack.len() - 1], *c]] {
+        while !stack.is_empty()
+            && matrix[[rows[stack.len() - 1], stack[stack.len() - 1]]]
+                > matrix[[rows[stack.len() - 1], *c]]
+        {
             stack.pop();
         }
         if stack.len() != rows.len() {
@@ -213,7 +224,6 @@ fn smawk_inner<T: Ord>(matrix: &ArrayView2<T>,
         minima[row] = pair.1;
     }
 }
-
 
 /// Verify that a matrix is a Monge matrix.
 ///
@@ -298,22 +308,25 @@ where
     matrix
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rand::XorShiftRng;
     use ndarray::arr2;
+    use rand::XorShiftRng;
 
     #[test]
     fn monge_constant_rows() {
         let mut rng = XorShiftRng::new_unseeded();
-        assert_eq!(MongePrim::ConstantRows.to_matrix(5, 4, &mut rng),
-                   arr2(&[[15u8, 15, 15, 15],
-                          [132, 132, 132, 132],
-                          [11, 11, 11, 11],
-                          [140, 140, 140, 140],
-                          [67, 67, 67, 67]]));
+        assert_eq!(
+            MongePrim::ConstantRows.to_matrix(5, 4, &mut rng),
+            arr2(&[
+                [15u8, 15, 15, 15],
+                [132, 132, 132, 132],
+                [11, 11, 11, 11],
+                [140, 140, 140, 140],
+                [67, 67, 67, 67]
+            ])
+        );
     }
 
     #[test]
@@ -321,12 +334,16 @@ mod tests {
         let mut rng = XorShiftRng::new_unseeded();
         let matrix = MongePrim::ConstantCols.to_matrix(5, 4, &mut rng);
         assert!(is_monge(&matrix));
-        assert_eq!(matrix,
-                   arr2(&[[15u8, 132, 11, 140],
-                          [15, 132, 11, 140],
-                          [15, 132, 11, 140],
-                          [15, 132, 11, 140],
-                          [15, 132, 11, 140]]));
+        assert_eq!(
+            matrix,
+            arr2(&[
+                [15u8, 132, 11, 140],
+                [15, 132, 11, 140],
+                [15, 132, 11, 140],
+                [15, 132, 11, 140],
+                [15, 132, 11, 140]
+            ])
+        );
     }
 
     #[test]
@@ -334,12 +351,16 @@ mod tests {
         let mut rng = XorShiftRng::new_unseeded();
         let matrix = MongePrim::UpperRightOnes.to_matrix(5, 4, &mut rng);
         assert!(is_monge(&matrix));
-        assert_eq!(matrix,
-                   arr2(&[[0, 0, 0, 1],
-                          [0, 0, 0, 1],
-                          [0, 0, 0, 0],
-                          [0, 0, 0, 0],
-                          [0, 0, 0, 0]]));
+        assert_eq!(
+            matrix,
+            arr2(&[
+                [0, 0, 0, 1],
+                [0, 0, 0, 1],
+                [0, 0, 0, 0],
+                [0, 0, 0, 0],
+                [0, 0, 0, 0]
+            ])
+        );
     }
 
     #[test]
@@ -347,12 +368,16 @@ mod tests {
         let mut rng = XorShiftRng::new_unseeded();
         let matrix = MongePrim::LowerLeftOnes.to_matrix(5, 4, &mut rng);
         assert!(is_monge(&matrix));
-        assert_eq!(matrix,
-                   arr2(&[[0, 0, 0, 0],
-                          [0, 0, 0, 0],
-                          [0, 0, 0, 0],
-                          [1, 0, 0, 0],
-                          [1, 0, 0, 0]]));
+        assert_eq!(
+            matrix,
+            arr2(&[
+                [0, 0, 0, 0],
+                [0, 0, 0, 0],
+                [0, 0, 0, 0],
+                [1, 0, 0, 0],
+                [1, 0, 0, 0]
+            ])
+        );
     }
 
     #[test]
@@ -405,11 +430,13 @@ mod tests {
 
     #[test]
     fn brute_force_5x5() {
-        let matrix = arr2(&[[3, 2, 4, 5, 6],
-                            [2, 1, 3, 3, 4],
-                            [2, 1, 3, 3, 4],
-                            [3, 2, 4, 3, 4],
-                            [4, 3, 2, 1, 1]]);
+        let matrix = arr2(&[
+            [3, 2, 4, 5, 6],
+            [2, 1, 3, 3, 4],
+            [2, 1, 3, 3, 4],
+            [3, 2, 4, 3, 4],
+            [4, 3, 2, 1, 1],
+        ]);
         let minima = vec![1, 1, 1, 1, 3];
         assert_eq!(brute_force_row_minima(&matrix), minima);
         assert_eq!(brute_force_column_minima(&matrix.reversed_axes()), minima);
@@ -465,11 +492,13 @@ mod tests {
 
     #[test]
     fn recursive_5x5() {
-        let matrix = arr2(&[[3, 2, 4, 5, 6],
-                            [2, 1, 3, 3, 4],
-                            [2, 1, 3, 3, 4],
-                            [3, 2, 4, 3, 4],
-                            [4, 3, 2, 1, 1]]);
+        let matrix = arr2(&[
+            [3, 2, 4, 5, 6],
+            [2, 1, 3, 3, 4],
+            [2, 1, 3, 3, 4],
+            [3, 2, 4, 3, 4],
+            [4, 3, 2, 1, 1],
+        ]);
         let minima = vec![1, 1, 1, 1, 3];
         assert_eq!(recursive_row_minima(&matrix), minima);
         assert_eq!(recursive_column_minima(&matrix.reversed_axes()), minima);
@@ -525,11 +554,13 @@ mod tests {
 
     #[test]
     fn smawk_5x5() {
-        let matrix = arr2(&[[3, 2, 4, 5, 6],
-                            [2, 1, 3, 3, 4],
-                            [2, 1, 3, 3, 4],
-                            [3, 2, 4, 3, 4],
-                            [4, 3, 2, 1, 1]]);
+        let matrix = arr2(&[
+            [3, 2, 4, 5, 6],
+            [2, 1, 3, 3, 4],
+            [2, 1, 3, 3, 4],
+            [3, 2, 4, 3, 4],
+            [4, 3, 2, 1, 1],
+        ]);
         let minima = vec![1, 1, 1, 1, 3];
         assert_eq!(smawk_row_minima(&matrix), minima);
         assert_eq!(smawk_column_minima(&matrix.reversed_axes()), minima);
@@ -551,27 +582,31 @@ mod tests {
                     let brute_force = brute_force_row_minima(&matrix);
                     let recursive = recursive_row_minima(&matrix);
                     let smawk = smawk_row_minima(&matrix);
-                    assert_eq!(brute_force,
-                               recursive,
-                               "recursive and brute force differs on:\n{:?}",
-                               matrix);
-                    assert_eq!(brute_force,
-                               smawk,
-                               "SMAWK and brute force differs on:\n{:?}",
-                               matrix);
+                    assert_eq!(
+                        brute_force, recursive,
+                        "recursive and brute force differs on:\n{:?}",
+                        matrix
+                    );
+                    assert_eq!(
+                        brute_force, smawk,
+                        "SMAWK and brute force differs on:\n{:?}",
+                        matrix
+                    );
 
                     // Do the same for the column minima.
                     let brute_force = brute_force_column_minima(&matrix);
                     let recursive = recursive_column_minima(&matrix);
                     let smawk = smawk_column_minima(&matrix);
-                    assert_eq!(brute_force,
-                               recursive,
-                               "recursive and brute force differs on:\n{:?}",
-                               matrix);
-                    assert_eq!(brute_force,
-                               smawk,
-                               "SMAWK and brute force differs on:\n{:?}",
-                               matrix);
+                    assert_eq!(
+                        brute_force, recursive,
+                        "recursive and brute force differs on:\n{:?}",
+                        matrix
+                    );
+                    assert_eq!(
+                        brute_force, smawk,
+                        "SMAWK and brute force differs on:\n{:?}",
+                        matrix
+                    );
                 }
             }
         }
