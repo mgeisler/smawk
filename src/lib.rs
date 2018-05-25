@@ -1,3 +1,68 @@
+//! This crate implements various functions that help speed up dynamic
+//! programming, most importantly the SMAWK algorithm for finding row
+//! or column minima in a totally monotone matrix with *m* rows and
+//! *n* columns in time O(*m* + *n*). This is much better than the
+//! brute force solution which would take O(*mn*). When *m* and *n*
+//! are of the same order, this turns a quadratic function into a
+//! linear function.
+//!
+//! Some of the functions in this crate only work on matrices that are
+//! *totally monotone*, which we will define below.
+//!
+//! # Monotone Matrices
+//!
+//! We start with a helper definition. Given an *m* ✕ *n* matrix `M`,
+//! we say that `M` is *monotone* when the minimum value of row `i` is
+//! found to the left of the minimum value in row `i'` where `i < i'`.
+//!
+//! More formally, if we let `rm(i)` denote the column index of the
+//! left-most minimum value in row `i`, then we have
+//!
+//! ```text
+//! rm(0) ≤ rm(1) ≤ ... ≤ rm(m - 1)
+//! ```
+//!
+//! This means that as you go down the rows from top to bottom, the
+//! row-minima proceed from left to right.
+//!
+//! The algorithms in this crate deal with finding such row- and
+//! column-minima.
+//!
+//! # Totally Monotone Matrices
+//!
+//! We say that a matrix `M` is *totally monotone* when every
+//! sub-matrix is monotone. A sub-matrix is formed by the intersection
+//! of any two rows `i < i'` and any two columns `j < j'`.
+//!
+//! This is often expressed as via this equivalent condition:
+//!
+//! ```text
+//! M[i, j] > M[i, j']  =>  M[i', j] > M[i', j']
+//! ```
+//!
+//! for all `i < i'` and `j < j'`.
+//!
+//! # Monge Property for Matrices
+//!
+//! A matrix `M` is said to fulfill the *Monge property* if
+//!
+//! ```text
+//! M[i, j] + M[i', j'] ≤ M[i, j'] + M[i', j]
+//! ```
+//!
+//! for all `i < i'` and `j < j'`. This says that given any rectangle
+//! in the matrix, the sum of the top-left and bottom-right corners is
+//! less than or equal to the sum of the bottom-left and upper-right
+//! corners.
+//!
+//! All Monge matrices are totally monotone, so it is enough to
+//! establish that the Monge property holds in order to use a matrix
+//! with the functions in this crate. If your program is dealing with
+//! unknown inputs, it can use [`is_monge`] to verify that a matrix is
+//! a Monge matrix.
+//!
+//! [`is_monge`]: fn.is_monge.html
+
 #![doc(html_root_url = "https://docs.rs/smawk/0.1.0")]
 
 #[macro_use(s)]
