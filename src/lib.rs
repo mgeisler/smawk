@@ -350,6 +350,7 @@ pub fn online_column_minima<M: Fn(&[(usize, i32)], usize, usize) -> i32>(
     // we don't want to borrow the result vector.
     macro_rules! m {
         ($i:expr, $j:expr) => {{
+            assert!($i < $j, "(i, j) not above diagonal: ({}, {})", $i, $j);
             assert!(
                 $i < size && $j < size,
                 "index out of bounds: ({}, {}), matrix size: {}",
