@@ -813,40 +813,104 @@ mod tests {
     }
 
     #[test]
-    fn concave_online() {
-        let mut rng = XorShiftRng::new_unseeded();
-        let matrix: Array2<i32> = random_monge_matrix(15, 15, &mut rng);
-
-        println!();
-        if matrix.rows() < 25 {
-            println!("{:2?}", matrix);
-        }
-        println!("is Monge? {:?}", is_monge(&matrix));
-        println!();
-
-        for size in 1..matrix.rows() + 1 {
-            let count = std::cell::RefCell::new(0);
-            let minima = online_column_minima(99, size, |values, i, j| {
-                println!(
-                    "- evaluating ({}, {}) -> {:?}, values: {:?}",
-                    i,
-                    j,
-                    matrix.get([i, j]),
-                    values
-                );
-                *count.borrow_mut() += 1;
-                matrix[[i, j]]
-            });
-
-            println!("minima: {:?}", minima);
-            let c = count.into_inner();
-            println!(
-                "evaluations: {:4} -> {:4} (x{:6.2})",
-                size,
-                c,
-                c as f64 / size as f64
-            );
-        }
+    fn online_1x1() {
+        let matrix = arr2(&[[0]]);
+        let minima = vec![(0, 0)];
+        assert_eq!(
+            online_column_minima(0, 1, |_, i, j| matrix[[i, j]],),
+            minima
+        );
     }
 
+    #[test]
+    fn online_2x2() {
+        let matrix = arr2(&[[0, 2], [0, 0]]);
+        let minima = vec![(0, 0), (0, 2)];
+        assert_eq!(
+            online_column_minima(0, 2, |_, i, j| matrix[[i, j]],),
+            minima
+        );
+    }
+
+    #[test]
+    fn online_3x3() {
+        let matrix = arr2(&[[0, 4, 4], [0, 0, 4], [0, 0, 0]]);
+        let minima = vec![(0, 0), (0, 4), (0, 4)];
+        assert_eq!(
+            online_column_minima(0, 3, |_, i, j| matrix[[i, j]],),
+            minima
+        );
+    }
+
+    #[test]
+    fn online_4x4() {
+        let matrix = arr2(&[[0, 5, 5, 5], [0, 0, 3, 3], [0, 0, 0, 3], [0, 0, 0, 0]]);
+        let minima = vec![(0, 0), (0, 5), (1, 3), (1, 3)];
+        assert_eq!(
+            online_column_minima(0, 4, |_, i, j| matrix[[i, j]],),
+            minima
+        );
+    }
+
+    #[test]
+    fn online_5x5() {
+        let matrix = arr2(&[
+            [0, 2, 4, 6, 7],
+            [0, 0, 3, 4, 5],
+            [0, 0, 0, 3, 4],
+            [0, 0, 0, 0, 4],
+            [0, 0, 0, 0, 0],
+        ]);
+        let minima = vec![(0, 0), (0, 2), (1, 3), (2, 3), (2, 4)];
+        assert_eq!(online_column_minima(0, 5, |_, i, j| matrix[[i, j]]), minima);
+    }
+
+    /// Check that the brute force and online SMAWK functions give
+    /// identical results on a large number of randomly generated
+    /// Monge matrices.
+    #[test]
+    fn online_agree() {
+        let sizes = vec![1, 2, 3, 4, 5, 10, 15, 20, 30, 50];
+        let mut rng = XorShiftRng::new_unseeded();
+        for _ in 0..5 {
+            for &size in &sizes {
+                // Random totally monotone square matrix of the
+                // desired size.
+                let mut matrix: Array2<i32> = random_monge_matrix(size, size, &mut rng);
+
+                // Adjust matrix so the column minima are above the
+                // diagonal. The brute_force_column_minima will still
+                // work just fine on such a mangled Monge matrix.
+                let max = matrix.fold(0, |max, &elem| std::cmp::max(max, elem));
+                for idx in 0..(size as isize) {
+                    // Using the maximum value of the matrix instead
+                    // of i32::max_value() makes for prettier matrices
+                    // in case we want to print them.
+                    matrix.slice_mut(s![idx..idx + 1, ..idx + 1]).fill(max);
+                }
+
+                // The online algorithm always returns the initial
+                // value for the left-most column -- without
+                // inspecting the column at all. So we fill the
+                // left-most column with this value to have the brute
+                // force algorithm do the same.
+                let initial = 42;
+                matrix.slice_mut(s![0.., ..1]).fill(initial);
+
+                // Brute-force computation of column minima, returned
+                // in the same form as online_column_minima.
+                let brute_force = brute_force_column_minima(&matrix)
+                    .iter()
+                    .enumerate()
+                    .map(|(j, &i)| (i, matrix[[i, j]]))
+                    .collect::<Vec<_>>();
+                let online = online_column_minima(initial, size, |_, i, j| matrix[[i, j]]);
+                assert_eq!(
+                    brute_force, online,
+                    "brute force and online differ on:\n{:3?}",
+                    matrix
+                );
+            }
+        }
+    }
 }
