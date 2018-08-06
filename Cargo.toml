@@ -15,6 +15,7 @@ license = "MIT"
 [badges]
 travis-ci = { repository = "mgeisler/smawk" }
 appveyor = { repository = "mgeisler/smawk" }
+codecov = { repository = "mgeisler/smawk" }
 
 [dependencies]
 ndarray = "0.10"
