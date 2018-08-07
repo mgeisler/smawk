@@ -44,6 +44,10 @@ The `minima` vector gives the index of the minimum value per column,
 so `minima[0] == 1` since the minimum value in the first column is 2
 (row 1). Note that the smallest row index is returned.
 
+## Documentation
+
+**[API documentation][api-docs]**
+
 ## License
 
 SMAWK can be distributed according to the [MIT license][mit].
@@ -53,4 +57,5 @@ Contributions will be accepted under the same license.
 [appveyor]: https://ci.appveyor.com/project/mgeisler/smawk
 [codecov]: https://codecov.io/gh/mgeisler/smawk
 [smawk]: https://en.wikipedia.org/wiki/SMAWK_algorithm
+[api-docs]: https://docs.rs/smawk/
 [mit]: LICENSE
