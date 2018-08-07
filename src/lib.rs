@@ -6,6 +6,33 @@
 //! are of the same order, this turns a quadratic function into a
 //! linear function.
 //!
+//! # Examples
+//!
+//! Computing the column minima of an *m* ✕ *n* Monge matrix can be
+//! done efficiently with `smawk_column_minima`:
+//!
+//! ```
+//! extern crate ndarray;
+//! extern crate smawk;
+//!
+//! use ndarray::arr2;
+//! use smawk::smawk_column_minima;
+//!
+//! let matrix = arr2(&[
+//!     [3, 2, 4, 5, 6],
+//!     [2, 1, 3, 3, 4],
+//!     [2, 1, 3, 3, 4],
+//!     [3, 2, 4, 3, 4],
+//!     [4, 3, 2, 1, 1],
+//! ]);
+//! let minima = vec![1, 1, 4, 4, 4];
+//! assert_eq!(smawk_column_minima(&matrix), minima);
+//! ```
+//!
+//! The `minima` vector gives the index of the minimum value per
+//! column, so `minima[0] == 1` since the minimum value in the first
+//! column is 2 (row 1). Note that the smallest row index is returned.
+//!
 //! # Definitions
 //!
 //! Some of the functions in this crate only work on matrices that are
