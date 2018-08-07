@@ -6,10 +6,12 @@
 //! are of the same order, this turns a quadratic function into a
 //! linear function.
 //!
+//! # Definitions
+//!
 //! Some of the functions in this crate only work on matrices that are
 //! *totally monotone*, which we will define below.
 //!
-//! # Monotone Matrices
+//! ## Monotone Matrices
 //!
 //! We start with a helper definition. Given an *m* ✕ *n* matrix `M`,
 //! we say that `M` is *monotone* when the minimum value of row `i` is
@@ -28,7 +30,7 @@
 //! The algorithms in this crate deal with finding such row- and
 //! column-minima.
 //!
-//! # Totally Monotone Matrices
+//! ## Totally Monotone Matrices
 //!
 //! We say that a matrix `M` is *totally monotone* when every
 //! sub-matrix is monotone. A sub-matrix is formed by the intersection
@@ -42,7 +44,7 @@
 //!
 //! for all `i < i'` and `j < j'`.
 //!
-//! # Monge Property for Matrices
+//! ## Monge Property for Matrices
 //!
 //! A matrix `M` is said to fulfill the *Monge property* if
 //!
