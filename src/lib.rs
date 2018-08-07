@@ -88,9 +88,7 @@ fn lane_minimum<T: Ord>(lane: ArrayView1<T>) -> usize {
         .expect("empty lane in matrix")
 }
 
-/// Compute row minima by brute force.
-///
-/// Running time on an *m* ✕ *n* matrix: O(*mn*).
+/// Compute row minima by brute force in O(*mn*) time.
 ///
 /// # Panics
 ///
@@ -99,9 +97,7 @@ pub fn brute_force_row_minima<T: Ord>(matrix: &Array2<T>) -> Vec<usize> {
     matrix.genrows().into_iter().map(lane_minimum).collect()
 }
 
-/// Compute column minima by brute force.
-///
-/// Running time on an *m* ✕ *n* matrix: O(*mn*).
+/// Compute column minima by brute force in O(*mn*) time.
 ///
 /// # Panics
 ///
