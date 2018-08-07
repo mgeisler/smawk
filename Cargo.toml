@@ -8,7 +8,7 @@ monotone matrix.
 """
 repository = "https://github.com/mgeisler/smawk"
 readme = "README.md"
-keywords = ["smawk", "matrix", "optimization", "dynamic programming"]
+keywords = ["smawk", "matrix", "optimization", "dynamic-programming"]
 categories = ["algorithms", "science"]
 license = "MIT"
 
