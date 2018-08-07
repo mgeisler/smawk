@@ -48,6 +48,16 @@ so `minima[0] == 1` since the minimum value in the first column is 2
 
 **[API documentation][api-docs]**
 
+## Release History
+
+This is a changelog describing the most important changes per release.
+
+### Version 0.1.0 — August 7th, 2018
+
+First release with the classical offline SMAWK algorithm as well as a
+newer online version where the matrix entries can depend on previously
+computed column minima.
+
 ## License
 
 SMAWK can be distributed according to the [MIT license][mit].
