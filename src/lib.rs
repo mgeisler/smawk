@@ -337,9 +337,9 @@ fn smawk_inner<T: Ord + Copy, M: Fn(usize, usize) -> T>(
 ///
 /// The input matrix must be totally monotone.
 ///
-/// The function returns a vector of `(usize, i32)` tuples. The
-/// `usize` in the tuple at index `j` tells you the row of the minimum
-/// value in column `j` and the `i32` value is minimum value itself.
+/// The function returns a vector of `(usize, T)`. The `usize` in the
+/// tuple at index `j` tells you the row of the minimum value in
+/// column `j` and the `T` value is minimum value itself.
 ///
 /// The algorithm only considers values above the main diagonal, which
 /// means that it computes values `v(j)` where:
@@ -357,13 +357,13 @@ fn smawk_inner<T: Ord + Copy, M: Fn(usize, usize) -> T>(
 /// function can refer back to previously computed column minima when
 /// determining an entry in the matrix. The guarantee is that we only
 /// call `matrix(i, j)` after having computed `v(i)`. This is
-/// reflected in the `&[(usize, i32)]` argument to `matrix`, which
-/// grows as more and more values are computed.
-pub fn online_column_minima<M: Fn(&[(usize, i32)], usize, usize) -> i32>(
-    initial: i32,
+/// reflected in the `&[(usize, T)]` argument to `matrix`, which grows
+/// as more and more values are computed.
+pub fn online_column_minima<T: Copy + Ord, M: Fn(&[(usize, T)], usize, usize) -> T>(
+    initial: T,
     size: usize,
     matrix: M,
-) -> Vec<(usize, i32)> {
+) -> Vec<(usize, T)> {
     let mut result = vec![(0, initial)];
 
     // State used by the algorithm.
