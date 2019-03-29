@@ -24,4 +24,4 @@ rand = "0.3"
 rand_derive = "0.3"
 
 [dev-dependencies]
-version-sync = "0.3"
+version-sync = "0.8"
