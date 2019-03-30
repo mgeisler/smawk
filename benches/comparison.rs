@@ -1,8 +1,5 @@
 #![feature(test)]
 
-extern crate ndarray;
-extern crate rand;
-extern crate smawk;
 extern crate test;
 
 use ndarray::Array2;

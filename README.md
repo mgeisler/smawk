@@ -54,6 +54,10 @@ so `minima[0] == 1` since the minimum value in the first column is 2
 
 This is a changelog describing the most important changes per release.
 
+### Unreleased
+
+Switched to Rust 2018.
+
 ### Version 0.1.0 — August 7th, 2018
 
 First release with the classical offline SMAWK algorithm as well as a

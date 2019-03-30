@@ -94,22 +94,16 @@
 
 #![doc(html_root_url = "https://docs.rs/smawk/0.1.0")]
 
-#[macro_use(s)]
-extern crate ndarray;
-extern crate num_traits;
-extern crate rand;
-#[macro_use]
-extern crate rand_derive;
-
-use ndarray::{Array2, ArrayView1, ArrayView2, Axis, Si};
+use ndarray::{s, Array2, ArrayView1, ArrayView2, Axis, Si};
 use num_traits::{NumOps, PrimInt};
 use rand::{Rand, Rng};
+use rand_derive::Rand;
 
 /// Compute lane minimum by brute force.
 ///
 /// This does a simple scan through the lane (row or column).
 #[inline]
-fn lane_minimum<T: Ord>(lane: ArrayView1<T>) -> usize {
+fn lane_minimum<T: Ord>(lane: ArrayView1<'_, T>) -> usize {
     lane.iter()
         .enumerate()
         .min_by_key(|&(idx, elem)| (elem, idx))
@@ -171,7 +165,7 @@ enum Direction {
 /// and optimized away and the result is that the compiler generates
 /// differnet code for finding row and column minima.
 fn recursive_inner<T: Ord, F: Fn() -> Direction>(
-    matrix: ArrayView2<T>,
+    matrix: ArrayView2<'_, T>,
     dir: &F,
     offset: usize,
     minima: &mut [usize],
