@@ -1,8 +1,4 @@
-extern crate ndarray;
-extern crate rand;
-extern crate smawk;
-
-use ndarray::{Array1, Array2, Axis};
+use ndarray::{Array1, Array2, Axis, LinalgScalar};
 use rand::XorShiftRng;
 use smawk::{online_column_minima, random_monge_matrix};
 use std::borrow::Borrow;
@@ -24,7 +20,7 @@ macro_rules! squared {
 /// Compute the mean of a 1-dimensional array.
 fn mean<T, A>(a: A) -> T
 where
-    T: ndarray::LinalgScalar,
+    T: LinalgScalar,
     A: Borrow<Array1<T>>,
 {
     a.borrow().mean_axis(Axis(0))[[]]
