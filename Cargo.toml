@@ -22,7 +22,7 @@ codecov = { repository = "mgeisler/smawk" }
 ndarray = "0.10"
 num-traits = "0.1"
 rand = "0.3"
-rand_derive = "0.3"
+rand_derive = "0.5"
 
 [dev-dependencies]
 version-sync = "0.8"
