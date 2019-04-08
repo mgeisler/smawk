@@ -20,7 +20,7 @@ codecov = { repository = "mgeisler/smawk" }
 
 [dependencies]
 ndarray = "0.10"
-num-traits = "0.1"
+num-traits = "0.2"
 rand = "0.3"
 rand_derive = "0.3"
 
