@@ -96,8 +96,8 @@
 
 use ndarray::{s, Array2, ArrayView1, ArrayView2, Axis, Si};
 use num_traits::{PrimInt, WrappingAdd};
-use rand::{Rand, Rng};
-use rand_derive::Rand;
+use rand::distributions::{Distribution, Standard};
+use rand::Rng;
 
 /// Compute lane minimum by brute force.
 ///
@@ -473,7 +473,7 @@ pub fn is_monge<T: PrimInt + WrappingAdd>(matrix: &Array2<T>) -> bool {
 
 /// A Monge matrix can be decomposed into one of these primitive
 /// building blocks.
-#[derive(Rand)]
+#[derive(Copy, Clone)]
 enum MongePrim {
     ConstantRows,
     ConstantCols,
@@ -483,7 +483,10 @@ enum MongePrim {
 
 impl MongePrim {
     /// Generate a Monge matrix from a primitive.
-    fn to_matrix<T: Rand + PrimInt, R: Rng>(&self, m: usize, n: usize, rng: &mut R) -> Array2<T> {
+    fn to_matrix<T: PrimInt, R: Rng>(&self, m: usize, n: usize, rng: &mut R) -> Array2<T>
+    where
+        Standard: Distribution<T>,
+    {
         let mut matrix = Array2::from_elem((m, n), T::zero());
         // Avoid panic in UpperRightOnes and LowerLeftOnes below.
         if m == 0 || n == 0 {
@@ -518,13 +521,13 @@ impl MongePrim {
 }
 
 /// Generate a random Monge matrix.
-pub fn random_monge_matrix<R: Rng, T>(m: usize, n: usize, rng: &mut R) -> Array2<T>
+pub fn random_monge_matrix<R: Rng, T: PrimInt>(m: usize, n: usize, rng: &mut R) -> Array2<T>
 where
-    T: Rand + PrimInt,
+    Standard: Distribution<T>,
 {
     let mut matrix = Array2::from_elem((m, n), T::zero());
     for _ in 0..(m + n) {
-        let monge = if rng.gen() {
+        let monge = if rng.gen::<bool>() {
             MongePrim::LowerLeftOnes
         } else {
             MongePrim::UpperRightOnes
@@ -538,7 +541,8 @@ where
 mod tests {
     use super::*;
     use ndarray::arr2;
-    use rand::XorShiftRng;
+    use rand::SeedableRng;
+    use rand_chacha::ChaCha20Rng;
 
     #[test]
     fn is_monge_handles_overflow() {
@@ -554,47 +558,47 @@ mod tests {
 
     #[test]
     fn monge_constant_rows() {
-        let mut rng = XorShiftRng::new_unseeded();
+        let mut rng = ChaCha20Rng::seed_from_u64(0);
         assert_eq!(
             MongePrim::ConstantRows.to_matrix(5, 4, &mut rng),
             arr2(&[
-                [15u8, 15, 15, 15],
-                [132, 132, 132, 132],
-                [11, 11, 11, 11],
-                [140, 140, 140, 140],
-                [67, 67, 67, 67]
+                [178u8, 178, 178, 178],
+                [214, 214, 214, 214],
+                [168, 168, 168, 168],
+                [126, 126, 126, 126],
+                [192, 192, 192, 192],
             ])
         );
     }
 
     #[test]
     fn monge_constant_cols() {
-        let mut rng = XorShiftRng::new_unseeded();
-        let matrix = MongePrim::ConstantCols.to_matrix(5, 4, &mut rng);
+        let mut rng = ChaCha20Rng::seed_from_u64(0);
+        let matrix: Array2<u8> = MongePrim::ConstantCols.to_matrix(5, 4, &mut rng);
         assert!(is_monge(&matrix));
         assert_eq!(
             matrix,
             arr2(&[
-                [15u8, 132, 11, 140],
-                [15, 132, 11, 140],
-                [15, 132, 11, 140],
-                [15, 132, 11, 140],
-                [15, 132, 11, 140]
+                [178, 214, 168, 126],
+                [178, 214, 168, 126],
+                [178, 214, 168, 126],
+                [178, 214, 168, 126],
+                [178, 214, 168, 126]
             ])
         );
     }
 
     #[test]
     fn monge_upper_right_ones() {
-        let mut rng = XorShiftRng::new_unseeded();
+        let mut rng = ChaCha20Rng::seed_from_u64(1);
         let matrix = MongePrim::UpperRightOnes.to_matrix(5, 4, &mut rng);
         assert!(is_monge(&matrix));
         assert_eq!(
             matrix,
             arr2(&[
-                [0, 0, 0, 1],
-                [0, 0, 0, 1],
-                [0, 0, 0, 0],
+                [0, 0, 1, 1],
+                [0, 0, 1, 1],
+                [0, 0, 1, 1],
                 [0, 0, 0, 0],
                 [0, 0, 0, 0]
             ])
@@ -603,7 +607,7 @@ mod tests {
 
     #[test]
     fn monge_lower_left_ones() {
-        let mut rng = XorShiftRng::new_unseeded();
+        let mut rng = ChaCha20Rng::seed_from_u64(1);
         let matrix = MongePrim::LowerLeftOnes.to_matrix(5, 4, &mut rng);
         assert!(is_monge(&matrix));
         assert_eq!(
@@ -611,9 +615,9 @@ mod tests {
             arr2(&[
                 [0, 0, 0, 0],
                 [0, 0, 0, 0],
-                [0, 0, 0, 0],
-                [1, 0, 0, 0],
-                [1, 0, 0, 0]
+                [1, 1, 0, 0],
+                [1, 1, 0, 0],
+                [1, 1, 0, 0]
             ])
         );
     }
@@ -810,7 +814,7 @@ mod tests {
     #[test]
     fn implementations_agree() {
         let sizes = vec![1, 2, 3, 4, 5, 10, 15, 20, 30];
-        let mut rng = XorShiftRng::new_unseeded();
+        let mut rng = ChaCha20Rng::seed_from_u64(0);
         for _ in 0..4 {
             for m in sizes.clone().iter() {
                 for n in sizes.clone().iter() {
@@ -909,7 +913,7 @@ mod tests {
     #[test]
     fn online_agree() {
         let sizes = vec![1, 2, 3, 4, 5, 10, 15, 20, 30, 50];
-        let mut rng = XorShiftRng::new_unseeded();
+        let mut rng = ChaCha20Rng::seed_from_u64(0);
         for _ in 0..5 {
             for &size in &sizes {
                 // Random totally monotone square matrix of the
