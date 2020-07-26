@@ -3,7 +3,8 @@
 extern crate test;
 
 use ndarray::Array2;
-use rand::XorShiftRng;
+use rand::SeedableRng;
+use rand_chacha::ChaCha20Rng;
 use test::Bencher;
 
 macro_rules! repeat {
@@ -12,14 +13,14 @@ macro_rules! repeat {
         $(
             #[bench]
             fn $row_bench(b: &mut Bencher) {
-                let mut rng = XorShiftRng::new_unseeded();
+                let mut rng = ChaCha20Rng::seed_from_u64(0);
                 let matrix: Array2<i32> = smawk::random_monge_matrix($size, $size, &mut rng);
                 b.iter(|| $row_func(&matrix));
             }
 
             #[bench]
             fn $column_bench(b: &mut Bencher) {
-                let mut rng = XorShiftRng::new_unseeded();
+                let mut rng = ChaCha20Rng::seed_from_u64(0);
                 let matrix: Array2<i32> = smawk::random_monge_matrix($size, $size, &mut rng).reversed_axes();
                 b.iter(|| $column_func(&matrix));
             }
