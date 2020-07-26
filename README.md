@@ -1,10 +1,9 @@
 # SMAWK Algorithm in Rust
 
+[![](https://github.com/mgeisler/smawk/workflows/build/badge.svg)][build-status]
+[![](https://codecov.io/gh/mgeisler/smawk/branch/master/graph/badge.svg)][codecov]
 [![](https://img.shields.io/crates/v/smawk.svg)][crates-io]
 [![](https://docs.rs/smawk/badge.svg)][api-docs]
-[![](https://travis-ci.org/mgeisler/smawk.svg)][travis-ci]
-[![](https://ci.appveyor.com/api/projects/status/github/mgeisler/smawk?branch=master&svg=true)][appveyor]
-[![](https://codecov.io/gh/mgeisler/smawk/branch/master/graph/badge.svg)][codecov]
 
 This crate contains an implementation of the [SMAWK algorithm][smawk]
 for finding the smallest element per row in a totally monotone matrix.
@@ -70,9 +69,8 @@ computed column minima.
 SMAWK can be distributed according to the [MIT license][mit].
 Contributions will be accepted under the same license.
 
+[build-status]: https://github.com/mgeisler/smawk/actions?query=workflow%3Abuild
 [crates-io]: https://crates.io/crates/smawk
-[travis-ci]: https://travis-ci.org/mgeisler/smawk
-[appveyor]: https://ci.appveyor.com/project/mgeisler/smawk
 [codecov]: https://codecov.io/gh/mgeisler/smawk
 [smawk]: https://en.wikipedia.org/wiki/SMAWK_algorithm
 [api-docs]: https://docs.rs/smawk/
