@@ -9,14 +9,11 @@ jobs:
   build:
     strategy:
       matrix:
-        os:
-          - ubuntu-latest
-          - windows-latest
         rust:
           - stable
           - nightly
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
