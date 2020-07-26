@@ -95,7 +95,7 @@
 #![doc(html_root_url = "https://docs.rs/smawk/0.1.0")]
 
 use ndarray::{s, Array2, ArrayView1, ArrayView2, Axis, Si};
-use num_traits::{NumOps, PrimInt};
+use num_traits::{PrimInt, WrappingAdd};
 use rand::{Rand, Rng};
 use rand_derive::Rand;
 
@@ -458,11 +458,17 @@ pub fn online_column_minima<T: Copy + Ord, M: Fn(&[(usize, T)], usize, usize) ->
 /// checking *n* ✕ *m* submatrices, so the running time is O(*mn*).
 ///
 /// [Monge matrix]: https://en.wikipedia.org/wiki/Monge_array
-pub fn is_monge<T: Copy + PartialOrd + NumOps>(matrix: &Array2<T>) -> bool {
-    matrix
-        .windows([2, 2])
-        .into_iter()
-        .all(|sub| sub[[0, 0]] + sub[[1, 1]] <= sub[[0, 1]] + sub[[1, 0]])
+pub fn is_monge<T: PrimInt + WrappingAdd>(matrix: &Array2<T>) -> bool {
+    matrix.windows([2, 2]).into_iter().all(|sub| {
+        let (x, y) = (sub[[0, 0]], sub[[1, 1]]);
+        let (z, w) = (sub[[0, 1]], sub[[1, 0]]);
+        match (x.checked_add(&y), z.checked_add(&w)) {
+            (Some(a), Some(b)) => a <= b,
+            (Some(_), None) => true,
+            (None, Some(_)) => false,
+            (None, None) => x.wrapping_add(&y) <= z.wrapping_add(&w),
+        }
+    })
 }
 
 /// A Monge matrix can be decomposed into one of these primitive
@@ -533,6 +539,18 @@ mod tests {
     use super::*;
     use ndarray::arr2;
     use rand::XorShiftRng;
+
+    #[test]
+    fn is_monge_handles_overflow() {
+        // The x + y <= z + w computations will overflow for an u8
+        // matrix unless is_monge is careful.
+        let matrix: Array2<u8> = arr2(&[
+            [200, 200, 200, 200],
+            [200, 200, 200, 200],
+            [200, 200, 200, 200],
+        ]);
+        assert!(is_monge(&matrix));
+    }
 
     #[test]
     fn monge_constant_rows() {
