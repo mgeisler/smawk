@@ -2,7 +2,6 @@
 
 [![](https://img.shields.io/crates/v/smawk.svg)][crates-io]
 [![](https://docs.rs/smawk/badge.svg)][api-docs]
-[![](https://img.shields.io/badge/rustc-1.31.0-blue.svg)][rust-2018]
 [![](https://travis-ci.org/mgeisler/smawk.svg)][travis-ci]
 [![](https://ci.appveyor.com/api/projects/status/github/mgeisler/smawk?branch=master&svg=true)][appveyor]
 [![](https://codecov.io/gh/mgeisler/smawk/branch/master/graph/badge.svg)][codecov]
@@ -57,8 +56,8 @@ This is a changelog describing the most important changes per release.
 
 ### Unreleased
 
-Switched to [Rust 2018][rust-2018], which means that the minimum
-supported Rust version is 1.31.0.
+Switched to the [Rust 2018][rust-2018] edition. We test against the
+latest stable and nightly version of Rust.
 
 ### Version 0.1.0 — August 7th, 2018
 
