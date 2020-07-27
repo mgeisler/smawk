@@ -94,7 +94,7 @@
 
 #![doc(html_root_url = "https://docs.rs/smawk/0.1.0")]
 
-use ndarray::{s, Array2, ArrayView1, ArrayView2, Axis, Si};
+use ndarray::{s, Array2, ArrayView1, ArrayView2, Axis};
 use num_traits::{PrimInt, WrappingAdd};
 use rand::distributions::{Distribution, Standard};
 use rand::Rng;
@@ -135,7 +135,7 @@ pub fn brute_force_column_minima<T: Ord>(matrix: &Array2<T>) -> Vec<usize> {
 ///
 /// It is an error to call this on a matrix with zero columns.
 pub fn recursive_row_minima<T: Ord>(matrix: &Array2<T>) -> Vec<usize> {
-    let mut minima = vec![0; matrix.rows()];
+    let mut minima = vec![0; matrix.nrows()];
     recursive_inner(matrix.view(), &|| Direction::Row, 0, &mut minima);
     minima
 }
@@ -146,7 +146,7 @@ pub fn recursive_row_minima<T: Ord>(matrix: &Array2<T>) -> Vec<usize> {
 ///
 /// It is an error to call this on a matrix with zero rows.
 pub fn recursive_column_minima<T: Ord>(matrix: &Array2<T>) -> Vec<usize> {
-    let mut minima = vec![0; matrix.cols()];
+    let mut minima = vec![0; matrix.ncols()];
     recursive_inner(matrix.view(), &|| Direction::Column, 0, &mut minima);
     minima
 }
@@ -179,7 +179,7 @@ fn recursive_inner<T: Ord, F: Fn() -> Direction>(
         Direction::Column => Axis(1),
     };
     let mid = matrix.len_of(axis) / 2;
-    let min_idx = lane_minimum(matrix.subview(axis, mid));
+    let min_idx = lane_minimum(matrix.index_axis(axis, mid));
     minima[mid] = offset + min_idx;
 
     if mid == 0 {
@@ -187,32 +187,15 @@ fn recursive_inner<T: Ord, F: Fn() -> Direction>(
     }
 
     let top_left = match dir() {
-        Direction::Row => [
-            Si(0, Some(mid as isize), 1),
-            Si(0, Some((min_idx + 1) as isize), 1),
-        ],
-        Direction::Column => [
-            Si(0, Some((min_idx + 1) as isize), 1),
-            Si(0, Some(mid as isize), 1),
-        ],
+        Direction::Row => matrix.slice(s![..mid, ..(min_idx + 1)]),
+        Direction::Column => matrix.slice(s![..(min_idx + 1), ..mid]),
     };
     let bot_right = match dir() {
-        Direction::Row => [
-            Si((mid + 1) as isize, None, 1),
-            Si(min_idx as isize, None, 1),
-        ],
-        Direction::Column => [
-            Si(min_idx as isize, None, 1),
-            Si((mid + 1) as isize, None, 1),
-        ],
+        Direction::Row => matrix.slice(s![(mid + 1).., min_idx..]),
+        Direction::Column => matrix.slice(s![min_idx.., (mid + 1)..]),
     };
-    recursive_inner(matrix.slice(&top_left), dir, offset, &mut minima[..mid]);
-    recursive_inner(
-        matrix.slice(&bot_right),
-        dir,
-        offset + min_idx,
-        &mut minima[mid + 1..],
-    );
+    recursive_inner(top_left, dir, offset, &mut minima[..mid]);
+    recursive_inner(bot_right, dir, offset + min_idx, &mut minima[mid + 1..]);
 }
 
 /// Compute row minima in O(*m* + *n*) time.
@@ -235,11 +218,11 @@ fn recursive_inner<T: Ord, F: Fn() -> Direction>(
 pub fn smawk_row_minima<T: Ord + Copy>(matrix: &Array2<T>) -> Vec<usize> {
     // Benchmarking shows that SMAWK performs roughly the same on row-
     // and column-major matrices.
-    let mut minima = vec![0; matrix.rows()];
+    let mut minima = vec![0; matrix.nrows()];
     smawk_inner(
         &|j, i| matrix[[i, j]],
-        &(0..matrix.cols()).collect::<Vec<_>>(),
-        &(0..matrix.rows()).collect::<Vec<_>>(),
+        &(0..matrix.ncols()).collect::<Vec<_>>(),
+        &(0..matrix.nrows()).collect::<Vec<_>>(),
         &mut minima,
     );
     minima
@@ -263,11 +246,11 @@ pub fn smawk_row_minima<T: Ord + Copy>(matrix: &Array2<T>) -> Vec<usize> {
 ///
 /// It is an error to call this on a matrix with zero rows.
 pub fn smawk_column_minima<T: Ord + Copy>(matrix: &Array2<T>) -> Vec<usize> {
-    let mut minima = vec![0; matrix.cols()];
+    let mut minima = vec![0; matrix.ncols()];
     smawk_inner(
         &|i, j| matrix[[i, j]],
-        &(0..matrix.rows()).collect::<Vec<_>>(),
-        &(0..matrix.cols()).collect::<Vec<_>>(),
+        &(0..matrix.nrows()).collect::<Vec<_>>(),
+        &(0..matrix.ncols()).collect::<Vec<_>>(),
         &mut minima,
     );
     minima
@@ -559,10 +542,11 @@ mod tests {
     #[test]
     fn monge_constant_rows() {
         let mut rng = ChaCha20Rng::seed_from_u64(0);
+        let matrix: Array2<u8> = MongePrim::ConstantRows.to_matrix(5, 4, &mut rng);
         assert_eq!(
-            MongePrim::ConstantRows.to_matrix(5, 4, &mut rng),
+            matrix,
             arr2(&[
-                [178u8, 178, 178, 178],
+                [178, 178, 178, 178],
                 [214, 214, 214, 214],
                 [168, 168, 168, 168],
                 [126, 126, 126, 126],
@@ -591,7 +575,7 @@ mod tests {
     #[test]
     fn monge_upper_right_ones() {
         let mut rng = ChaCha20Rng::seed_from_u64(1);
-        let matrix = MongePrim::UpperRightOnes.to_matrix(5, 4, &mut rng);
+        let matrix: Array2<u8> = MongePrim::UpperRightOnes.to_matrix(5, 4, &mut rng);
         assert!(is_monge(&matrix));
         assert_eq!(
             matrix,
@@ -608,7 +592,7 @@ mod tests {
     #[test]
     fn monge_lower_left_ones() {
         let mut rng = ChaCha20Rng::seed_from_u64(1);
-        let matrix = MongePrim::LowerLeftOnes.to_matrix(5, 4, &mut rng);
+        let matrix: Array2<u8> = MongePrim::LowerLeftOnes.to_matrix(5, 4, &mut rng);
         assert!(is_monge(&matrix));
         assert_eq!(
             matrix,

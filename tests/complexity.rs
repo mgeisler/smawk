@@ -1,8 +1,7 @@
-use ndarray::{Array1, Array2, Axis, LinalgScalar};
+use ndarray::{Array1, Array2};
 use rand::SeedableRng;
 use rand_chacha::ChaCha20Rng;
 use smawk::{online_column_minima, random_monge_matrix};
-use std::borrow::Borrow;
 
 #[derive(Debug)]
 struct LinRegression {
@@ -19,24 +18,22 @@ macro_rules! squared {
 }
 
 /// Compute the mean of a 1-dimensional array.
-fn mean<T, A>(a: A) -> T
-where
-    T: LinalgScalar,
-    A: Borrow<Array1<T>>,
-{
-    a.borrow().mean_axis(Axis(0))[[]]
+macro_rules! mean {
+    ($a:expr) => {
+        $a.mean().expect("Mean of empty array")
+    };
 }
 
 /// Compute a simple linear regression from the list of values.
 ///
 /// See <https://en.wikipedia.org/wiki/Simple_linear_regression>.
 fn linear_regression(values: &[(usize, i32)]) -> LinRegression {
-    let xs = Array1::from_iter(values.iter().map(|&(x, _)| x as f64));
-    let ys = Array1::from_iter(values.iter().map(|&(_, y)| y as f64));
+    let xs = values.iter().map(|&(x, _)| x as f64).collect::<Array1<_>>();
+    let ys = values.iter().map(|&(_, y)| y as f64).collect::<Array1<_>>();
 
-    let xs_mean = mean(&xs);
-    let ys_mean = mean(&ys);
-    let xs_ys_mean = mean(&xs * &ys);
+    let xs_mean = mean!(&xs);
+    let ys_mean = mean!(&ys);
+    let xs_ys_mean = mean!(&xs * &ys);
 
     let cov_xs_ys = ((&xs - xs_mean) * (&ys - ys_mean)).scalar_sum();
     let var_xs = squared!(&xs - xs_mean).scalar_sum();
@@ -44,7 +41,7 @@ fn linear_regression(values: &[(usize, i32)]) -> LinRegression {
     let beta = cov_xs_ys / var_xs;
     let alpha = ys_mean - beta * xs_mean;
     let r_squared = squared!(xs_ys_mean - xs_mean * ys_mean)
-        / ((mean(&xs * &xs) - squared!(xs_mean)) * (mean(&ys * &ys) - squared!(ys_mean)));
+        / ((mean!(&xs * &xs) - squared!(xs_mean)) * (mean!(&ys * &ys) - squared!(ys_mean)));
 
     LinRegression {
         alpha: alpha,
