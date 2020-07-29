@@ -13,7 +13,7 @@ for finding the smallest element per row in a totally monotone matrix.
 Add this to your `Cargo.toml`:
 ```toml
 [dependencies]
-smawk = "0.1"
+smawk = "0.2"
 ```
 and this to your crate root:
 ```rust
