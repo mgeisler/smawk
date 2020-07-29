@@ -55,36 +55,34 @@ This is a changelog describing the most important changes per release.
 
 ### Version 0.2.0 (2020-07-29)
 
-* [#18](https://github.com/mgeisler/smawk/pull/18): online_column_minima: make generic in matrix type
+* [#18](https://github.com/mgeisler/smawk/pull/18): Make
+  `online_column_minima` generic in matrix type.
 
-* [#23](https://github.com/mgeisler/smawk/pull/23): Switch to Rust 2018
+* [#23](https://github.com/mgeisler/smawk/pull/23): Switch to the
+  [Rust 2018][rust-2018] edition. We test against the latest stable
+  and nightly version of Rust.
 
-* [#26](https://github.com/mgeisler/smawk/pull/26): travis: drop beta Rust target
+* [#29](https://github.com/mgeisler/smawk/pull/29): Drop strict Rust
+  2018 compatibility by not testing with Rust 1.31.0.
 
-* [#27](https://github.com/mgeisler/smawk/pull/27): circleci: run cargo tarpaulin in a machine image
+* [#32](https://github.com/mgeisler/smawk/pull/32): Fix crash on
+  overflow in `is_monge`.
 
-* [#28](https://github.com/mgeisler/smawk/pull/28): Simplify CI scripts by making them less verbose
+* [#33](https://github.com/mgeisler/smawk/pull/33): Update `rand`
+  dependency to latest version and get rid of `rand_derive`.
 
-* [#29](https://github.com/mgeisler/smawk/pull/29): Drop strict Rust 2018 compatibility by not testing with Rust 1.31.0
+* [#34](https://github.com/mgeisler/smawk/pull/34): Bump `num-traits`
+  and `version-sync` dependencies to latest versions.
 
-* [#30](https://github.com/mgeisler/smawk/pull/30): Unify CI scripts from Travis and Appveyor as GitHub actions
+* [#35](https://github.com/mgeisler/smawk/pull/35): Drop unnecessary
+  Windows tests. The assumption is that the numeric computations we do
+  are cross-platform.
 
-* [#31](https://github.com/mgeisler/smawk/pull/31): Drop old and unused CI configuration
+* [#36](https://github.com/mgeisler/smawk/pull/36): Update `ndarray`
+  dependency to the latest version.
 
-* [#32](https://github.com/mgeisler/smawk/pull/32): Fix crash on overflow in `is_monge`
-
-* [#33](https://github.com/mgeisler/smawk/pull/33): Update rand dependency to latest version and get rid of rand_derive
-
-* [#34](https://github.com/mgeisler/smawk/pull/34): Bump num-traits and version-sync to latest versions
-
-* [#35](https://github.com/mgeisler/smawk/pull/35): Drop unnecessary Windows tests
-
-* [#36](https://github.com/mgeisler/smawk/pull/36): Update ndarray to the latest version
-
-* [#37](https://github.com/mgeisler/smawk/pull/37): Automate publishing new releases to crates.io
-
-Switched to the [Rust 2018][rust-2018] edition. We test against the
-latest stable and nightly version of Rust.
+* [#37](https://github.com/mgeisler/smawk/pull/37): Automate
+  publishing new releases to crates.io.
 
 ### Version 0.1.0 — August 7th, 2018
 
