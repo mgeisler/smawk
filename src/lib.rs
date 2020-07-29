@@ -92,7 +92,7 @@
 //!
 //! [`is_monge`]: fn.is_monge.html
 
-#![doc(html_root_url = "https://docs.rs/smawk/0.1.0")]
+#![doc(html_root_url = "https://docs.rs/smawk/0.2.0")]
 
 use ndarray::{s, Array2, ArrayView1, ArrayView2, Axis};
 use num_traits::{PrimInt, WrappingAdd};
