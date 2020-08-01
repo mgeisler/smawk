@@ -76,7 +76,7 @@ jobs:
 
             const changelog = prs.data.items.map(
               pr => `* [#${pr.number}](${pr.html_url}): ${pr.title}`
-            ).join('\n\n')
+            ).join('\n')
             core.exportVariable('CHANGELOG', changelog)
 
             var readme = fs.readFileSync('README.md', 'utf8')
