@@ -95,7 +95,7 @@ computed column minima.
 SMAWK can be distributed according to the [MIT license][mit].
 Contributions will be accepted under the same license.
 
-[build-status]: https://github.com/mgeisler/smawk/actions?query=workflow%3Abuild
+[build-status]: https://github.com/mgeisler/smawk/actions?query=branch%3Amaster+workflow%3Abuild
 [crates-io]: https://crates.io/crates/smawk
 [codecov]: https://codecov.io/gh/mgeisler/smawk
 [smawk]: https://en.wikipedia.org/wiki/SMAWK_algorithm
