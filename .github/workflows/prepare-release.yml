@@ -81,11 +81,11 @@ jobs:
 
             var readme = fs.readFileSync('README.md', 'utf8')
             const today = new Date().toISOString().split('T')[0]
-            const heading = `## Version ${new_version} (${today})\n`
-            if (readme.match('## Unreleased')) {
-              readme = readme.replace('## Unreleased', `${heading}\n${changelog}`)
+            const heading = `### Version ${new_version} (${today})\n`
+            if (readme.match('### Unreleased')) {
+              readme = readme.replace('### Unreleased', `${heading}\n${changelog}`)
             } else {
-              readme = readme.replace('# Changelog', `# Changelog\n\n${heading}\n${changelog}`)
+              readme = readme.replace('## Changelog', `## Changelog\n\n${heading}\n${changelog}`)
             }
             fs.writeFileSync('README.md', readme)
 
