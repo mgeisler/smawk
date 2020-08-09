@@ -479,12 +479,16 @@ impl MongePrim {
         match *self {
             MongePrim::ConstantRows => {
                 for mut row in matrix.genrows_mut() {
-                    row.fill(rng.gen());
+                    if rng.gen::<bool>() {
+                        row.fill(T::one())
+                    }
                 }
             }
             MongePrim::ConstantCols => {
                 for mut col in matrix.gencolumns_mut() {
-                    col.fill(rng.gen());
+                    if rng.gen::<bool>() {
+                        col.fill(T::one())
+                    }
                 }
             }
             MongePrim::UpperRightOnes => {
@@ -508,13 +512,15 @@ pub fn random_monge_matrix<R: Rng, T: PrimInt>(m: usize, n: usize, rng: &mut R) 
 where
     Standard: Distribution<T>,
 {
+    let monge_primitives = [
+        MongePrim::ConstantRows,
+        MongePrim::ConstantCols,
+        MongePrim::LowerLeftOnes,
+        MongePrim::UpperRightOnes,
+    ];
     let mut matrix = Array2::from_elem((m, n), T::zero());
     for _ in 0..(m + n) {
-        let monge = if rng.gen::<bool>() {
-            MongePrim::LowerLeftOnes
-        } else {
-            MongePrim::UpperRightOnes
-        };
+        let monge = monge_primitives[rng.gen_range(0, monge_primitives.len())];
         matrix = matrix + monge.to_matrix(m, n, rng);
     }
     matrix
@@ -523,7 +529,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use ndarray::arr2;
+    use ndarray::{arr2, Array};
     use rand::SeedableRng;
     use rand_chacha::ChaCha20Rng;
 
@@ -543,16 +549,11 @@ mod tests {
     fn monge_constant_rows() {
         let mut rng = ChaCha20Rng::seed_from_u64(0);
         let matrix: Array2<u8> = MongePrim::ConstantRows.to_matrix(5, 4, &mut rng);
-        assert_eq!(
-            matrix,
-            arr2(&[
-                [178, 178, 178, 178],
-                [214, 214, 214, 214],
-                [168, 168, 168, 168],
-                [126, 126, 126, 126],
-                [192, 192, 192, 192],
-            ])
-        );
+        assert!(is_monge(&matrix));
+        for row in matrix.genrows() {
+            let elem = row[0];
+            assert_eq!(row, Array::from_elem(matrix.ncols(), elem));
+        }
     }
 
     #[test]
@@ -560,16 +561,10 @@ mod tests {
         let mut rng = ChaCha20Rng::seed_from_u64(0);
         let matrix: Array2<u8> = MongePrim::ConstantCols.to_matrix(5, 4, &mut rng);
         assert!(is_monge(&matrix));
-        assert_eq!(
-            matrix,
-            arr2(&[
-                [178, 214, 168, 126],
-                [178, 214, 168, 126],
-                [178, 214, 168, 126],
-                [178, 214, 168, 126],
-                [178, 214, 168, 126]
-            ])
-        );
+        for column in matrix.gencolumns() {
+            let elem = column[0];
+            assert_eq!(column, Array::from_elem(matrix.nrows(), elem));
+        }
     }
 
     #[test]
