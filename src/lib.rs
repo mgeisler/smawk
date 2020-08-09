@@ -902,7 +902,7 @@ mod tests {
                 // Adjust matrix so the column minima are above the
                 // diagonal. The brute_force_column_minima will still
                 // work just fine on such a mangled Monge matrix.
-                let max = matrix.fold(0, |max, &elem| std::cmp::max(max, elem));
+                let max = *matrix.iter().max().unwrap_or(&0);
                 for idx in 0..(size as isize) {
                     // Using the maximum value of the matrix instead
                     // of i32::max_value() makes for prettier matrices
