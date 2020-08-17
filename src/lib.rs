@@ -12,9 +12,6 @@
 //! done efficiently with `smawk_column_minima`:
 //!
 //! ```
-//! extern crate ndarray;
-//! extern crate smawk;
-//!
 //! use ndarray::arr2;
 //! use smawk::smawk_column_minima;
 //!
