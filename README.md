@@ -15,18 +15,11 @@ Add this to your `Cargo.toml`:
 [dependencies]
 smawk = "0.2"
 ```
-and this to your crate root:
-```rust
-extern crate smawk;
-```
 
 You can now efficiently find row and column minima. Here is an example
 where we find the column minima:
 
 ```rust
-extern crate ndarray;
-extern crate smawk;
-
 use ndarray::arr2;
 use smawk::smawk_column_minima;
 
