@@ -12,16 +12,15 @@
 //! done efficiently with `smawk_column_minima`:
 //!
 //! ```
-//! use ndarray::arr2;
-//! use smawk::smawk_column_minima;
+//! use smawk::{Matrix, smawk_column_minima};
 //!
-//! let matrix = arr2(&[
-//!     [3, 2, 4, 5, 6],
-//!     [2, 1, 3, 3, 4],
-//!     [2, 1, 3, 3, 4],
-//!     [3, 2, 4, 3, 4],
-//!     [4, 3, 2, 1, 1],
-//! ]);
+//! let matrix = vec![
+//!     vec![3, 2, 4, 5, 6],
+//!     vec![2, 1, 3, 3, 4],
+//!     vec![2, 1, 3, 3, 4],
+//!     vec![3, 2, 4, 3, 4],
+//!     vec![4, 3, 2, 1, 1],
+//! ];
 //! let minima = vec![1, 1, 4, 4, 4];
 //! assert_eq!(smawk_column_minima(&matrix), minima);
 //! ```
@@ -102,11 +101,31 @@ pub mod recursive;
 /// elements. Modeled after
 /// [`ndarray::Array2`](https://docs.rs/ndarray/latest/ndarray/type.Array2.html)
 /// from the [ndarray crate ](https://crates.io/crates/ndarray).
-pub trait Matrix<T: Copy>: std::ops::Index<[usize; 2], Output = T> {
+pub trait Matrix<T: Copy> {
     /// Return the number of rows.
     fn nrows(&self) -> usize;
     /// Return the number of columns.
     fn ncols(&self) -> usize;
+    /// Return a matrix element.
+    fn index(&self, row: usize, column: usize) -> T;
+}
+
+/// Simple and inefficient matrix representation used for doctest
+/// examples and simple unit tests.
+///
+/// You should prefer implementing it yourself, or you can enable the
+/// `ndarray` Cargo feature and use the provided implementation for
+/// `ndarray::Array2`.
+impl<T: Copy> Matrix<T> for Vec<Vec<T>> {
+    fn nrows(&self) -> usize {
+        self.len()
+    }
+    fn ncols(&self) -> usize {
+        self[0].len()
+    }
+    fn index(&self, row: usize, column: usize) -> T {
+        self[row][column]
+    }
 }
 
 /// Adapting `ndarray::Array2` to the `Matrix` trait.
@@ -118,6 +137,10 @@ impl<T: Copy> Matrix<T> for ndarray::Array2<T> {
     #[inline]
     fn ncols(&self) -> usize {
         self.ncols()
+    }
+    #[inline]
+    fn index(&self, row: usize, column: usize) -> T {
+        self[[row, column]]
     }
 }
 
@@ -143,7 +166,7 @@ pub fn smawk_row_minima<T: Ord + Copy, M: Matrix<T>>(matrix: &M) -> Vec<usize> {
     // and column-major matrices.
     let mut minima = vec![0; matrix.nrows()];
     smawk_inner(
-        &|j, i| matrix[[i, j]],
+        &|j, i| matrix.index(i, j),
         &(0..matrix.ncols()).collect::<Vec<_>>(),
         &(0..matrix.nrows()).collect::<Vec<_>>(),
         &mut minima,
@@ -171,7 +194,7 @@ pub fn smawk_row_minima<T: Ord + Copy, M: Matrix<T>>(matrix: &M) -> Vec<usize> {
 pub fn smawk_column_minima<T: Ord + Copy, M: Matrix<T>>(matrix: &M) -> Vec<usize> {
     let mut minima = vec![0; matrix.ncols()];
     smawk_inner(
-        &|i, j| matrix[[i, j]],
+        &|i, j| matrix.index(i, j),
         &(0..matrix.nrows()).collect::<Vec<_>>(),
         &(0..matrix.ncols()).collect::<Vec<_>>(),
         &mut minima,
