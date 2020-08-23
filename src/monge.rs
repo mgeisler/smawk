@@ -6,10 +6,13 @@
 //! **Note: this module is only available if you enable the `ndarray`
 //! Cargo feature.**
 
+use crate::Matrix;
 use ndarray::{s, Array2};
-use num_traits::{PrimInt, WrappingAdd};
+use num_traits::PrimInt;
 use rand::distributions::{Distribution, Standard};
 use rand::Rng;
+use std::num::Wrapping;
+use std::ops::Add;
 
 /// Verify that a matrix is a Monge matrix.
 ///
@@ -25,17 +28,42 @@ use rand::Rng;
 /// checking *n* ✕ *m* submatrices, so the running time is O(*mn*).
 ///
 /// [Monge matrix]: https://en.wikipedia.org/wiki/Monge_array
-pub fn is_monge<T: PrimInt + WrappingAdd>(matrix: &Array2<T>) -> bool {
-    matrix.windows([2, 2]).into_iter().all(|sub| {
-        let (x, y) = (sub[[0, 0]], sub[[1, 1]]);
-        let (z, w) = (sub[[0, 1]], sub[[1, 0]]);
-        match (x.checked_add(&y), z.checked_add(&w)) {
-            (Some(a), Some(b)) => a <= b,
-            (Some(_), None) => true,
-            (None, Some(_)) => false,
-            (None, None) => x.wrapping_add(&y) <= z.wrapping_add(&w),
+pub fn is_monge<T: Ord + Copy, M: Matrix<T>>(matrix: &M) -> bool
+where
+    Wrapping<T>: Add<Output = Wrapping<T>>,
+{
+    /// Returns `Ok(a + b)` if the computation can be done without
+    /// overflow, otherwise `Err(a + b - T::MAX - 1)` is returned.
+    fn checked_add<T: Ord + Copy>(a: Wrapping<T>, b: Wrapping<T>) -> Result<T, T>
+    where
+        Wrapping<T>: Add<Output = Wrapping<T>>,
+    {
+        let sum = a + b;
+        if sum < a {
+            Err(sum.0)
+        } else {
+            Ok(sum.0)
         }
-    })
+    }
+
+    (0..matrix.nrows() - 1)
+        .flat_map(|row| (0..matrix.ncols() - 1).map(move |col| (row, col)))
+        .all(|(row, col)| {
+            let top_left = Wrapping(matrix.index(row, col));
+            let top_right = Wrapping(matrix.index(row, col + 1));
+            let bot_left = Wrapping(matrix.index(row + 1, col));
+            let bot_right = Wrapping(matrix.index(row + 1, col + 1));
+
+            match (
+                checked_add(top_left, bot_right),
+                checked_add(bot_left, top_right),
+            ) {
+                (Ok(a), Ok(b)) => a <= b,   // No overflow.
+                (Err(a), Err(b)) => a <= b, // Double overflow.
+                (Ok(_), Err(_)) => true,    // Antidiagonal overflow.
+                (Err(_), Ok(_)) => false,   // Main diagonal overflow.
+            }
+        })
 }
 
 /// A Monge matrix can be decomposed into one of these primitive
