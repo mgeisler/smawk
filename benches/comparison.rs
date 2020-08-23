@@ -1,3 +1,4 @@
+#![cfg(feature = "ndarray")]
 #![feature(test)]
 
 extern crate test;

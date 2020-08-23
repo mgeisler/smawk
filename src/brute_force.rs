@@ -1,4 +1,10 @@
 //! Brute-force algorithm for finding column minima.
+//!
+//! The functions here are mostly meant to be used for testing
+//! correctness of the SMAWK implementation.
+//!
+//! **Note: this module is only available if you enable the `ndarray`
+//! Cargo feature.**
 
 use ndarray::{Array2, ArrayView1};
 
