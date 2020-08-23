@@ -12,16 +12,15 @@
 //! done efficiently with `smawk_column_minima`:
 //!
 //! ```
-//! use ndarray::arr2;
-//! use smawk::smawk_column_minima;
+//! use smawk::{Matrix, smawk_column_minima};
 //!
-//! let matrix = arr2(&[
-//!     [3, 2, 4, 5, 6],
-//!     [2, 1, 3, 3, 4],
-//!     [2, 1, 3, 3, 4],
-//!     [3, 2, 4, 3, 4],
-//!     [4, 3, 2, 1, 1],
-//! ]);
+//! let matrix = vec![
+//!     vec![3, 2, 4, 5, 6],
+//!     vec![2, 1, 3, 3, 4],
+//!     vec![2, 1, 3, 3, 4],
+//!     vec![3, 2, 4, 3, 4],
+//!     vec![4, 3, 2, 1, 1],
+//! ];
 //! let minima = vec![1, 1, 4, 4, 4];
 //! assert_eq!(smawk_column_minima(&matrix), minima);
 //! ```
@@ -91,11 +90,59 @@
 
 #![doc(html_root_url = "https://docs.rs/smawk/0.2.0")]
 
-use ndarray::Array2;
-
 pub mod brute_force;
 pub mod monge;
 pub mod recursive;
+
+/// Minimal matrix trait for two-dimensional arrays.
+///
+/// This provides the functionality needed to represent a read-only
+/// numeric matrix. You can query the size of the matrix and access
+/// elements. Modeled after
+/// [`ndarray::Array2`](https://docs.rs/ndarray/latest/ndarray/type.Array2.html)
+/// from the [ndarray crate ](https://crates.io/crates/ndarray).
+pub trait Matrix<T: Copy> {
+    /// Return the number of rows.
+    fn nrows(&self) -> usize;
+    /// Return the number of columns.
+    fn ncols(&self) -> usize;
+    /// Return a matrix element.
+    fn index(&self, row: usize, column: usize) -> T;
+}
+
+/// Simple and inefficient matrix representation used for doctest
+/// examples and simple unit tests.
+///
+/// You should prefer implementing it yourself, or you can enable the
+/// `ndarray` Cargo feature and use the provided implementation for
+/// `ndarray::Array2`.
+impl<T: Copy> Matrix<T> for Vec<Vec<T>> {
+    fn nrows(&self) -> usize {
+        self.len()
+    }
+    fn ncols(&self) -> usize {
+        self[0].len()
+    }
+    fn index(&self, row: usize, column: usize) -> T {
+        self[row][column]
+    }
+}
+
+/// Adapting `ndarray::Array2` to the `Matrix` trait.
+impl<T: Copy> Matrix<T> for ndarray::Array2<T> {
+    #[inline]
+    fn nrows(&self) -> usize {
+        self.nrows()
+    }
+    #[inline]
+    fn ncols(&self) -> usize {
+        self.ncols()
+    }
+    #[inline]
+    fn index(&self, row: usize, column: usize) -> T {
+        self[[row, column]]
+    }
+}
 
 /// Compute row minima in O(*m* + *n*) time.
 ///
@@ -114,12 +161,12 @@ pub mod recursive;
 /// # Panics
 ///
 /// It is an error to call this on a matrix with zero columns.
-pub fn smawk_row_minima<T: Ord + Copy>(matrix: &Array2<T>) -> Vec<usize> {
+pub fn smawk_row_minima<T: Ord + Copy, M: Matrix<T>>(matrix: &M) -> Vec<usize> {
     // Benchmarking shows that SMAWK performs roughly the same on row-
     // and column-major matrices.
     let mut minima = vec![0; matrix.nrows()];
     smawk_inner(
-        &|j, i| matrix[[i, j]],
+        &|j, i| matrix.index(i, j),
         &(0..matrix.ncols()).collect::<Vec<_>>(),
         &(0..matrix.nrows()).collect::<Vec<_>>(),
         &mut minima,
@@ -144,10 +191,10 @@ pub fn smawk_row_minima<T: Ord + Copy>(matrix: &Array2<T>) -> Vec<usize> {
 /// # Panics
 ///
 /// It is an error to call this on a matrix with zero rows.
-pub fn smawk_column_minima<T: Ord + Copy>(matrix: &Array2<T>) -> Vec<usize> {
+pub fn smawk_column_minima<T: Ord + Copy, M: Matrix<T>>(matrix: &M) -> Vec<usize> {
     let mut minima = vec![0; matrix.ncols()];
     smawk_inner(
-        &|i, j| matrix[[i, j]],
+        &|i, j| matrix.index(i, j),
         &(0..matrix.nrows()).collect::<Vec<_>>(),
         &(0..matrix.ncols()).collect::<Vec<_>>(),
         &mut minima,
