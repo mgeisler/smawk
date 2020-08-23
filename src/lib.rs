@@ -90,8 +90,11 @@
 
 #![doc(html_root_url = "https://docs.rs/smawk/0.2.0")]
 
+#[cfg(feature = "ndarray")]
 pub mod brute_force;
+#[cfg(feature = "ndarray")]
 pub mod monge;
+#[cfg(feature = "ndarray")]
 pub mod recursive;
 
 /// Minimal matrix trait for two-dimensional arrays.
@@ -101,6 +104,9 @@ pub mod recursive;
 /// elements. Modeled after
 /// [`ndarray::Array2`](https://docs.rs/ndarray/latest/ndarray/type.Array2.html)
 /// from the [ndarray crate ](https://crates.io/crates/ndarray).
+///
+/// Enable the `ndarray` Cargo feature if you want to use it with
+/// `ndarray::Array2`.
 pub trait Matrix<T: Copy> {
     /// Return the number of rows.
     fn nrows(&self) -> usize;
@@ -129,6 +135,10 @@ impl<T: Copy> Matrix<T> for Vec<Vec<T>> {
 }
 
 /// Adapting `ndarray::Array2` to the `Matrix` trait.
+///
+/// **Note: this implementation is only available if you enable the
+/// `ndarray` Cargo feature.**
+#[cfg(feature = "ndarray")]
 impl<T: Copy> Matrix<T> for ndarray::Array2<T> {
     #[inline]
     fn nrows(&self) -> usize {

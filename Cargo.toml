@@ -16,7 +16,7 @@ appveyor = { repository = "mgeisler/smawk" }
 codecov = { repository = "mgeisler/smawk" }
 
 [dependencies]
-ndarray = "0.13"
+ndarray = { version = "0.13", optional = true }
 num-traits = "0.2"
 rand = "0.7"
 

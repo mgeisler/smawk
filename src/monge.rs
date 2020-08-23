@@ -1,4 +1,10 @@
 //! Functions for generating and checking Monge arrays.
+//!
+//! The functions here are mostly meant to be used for testing
+//! correctness of the SMAWK implementation.
+//!
+//! **Note: this module is only available if you enable the `ndarray`
+//! Cargo feature.**
 
 use ndarray::{s, Array2};
 use num_traits::{PrimInt, WrappingAdd};

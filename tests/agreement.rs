@@ -1,3 +1,5 @@
+#![cfg(feature = "ndarray")]
+
 use ndarray::{s, Array2};
 use rand::SeedableRng;
 use rand_chacha::ChaCha20Rng;
