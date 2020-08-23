@@ -1,7 +1,8 @@
 use ndarray::{Array1, Array2};
 use rand::SeedableRng;
 use rand_chacha::ChaCha20Rng;
-use smawk::{online_column_minima, random_monge_matrix};
+use smawk::monge::random_monge_matrix;
+use smawk::online_column_minima;
 
 #[derive(Debug)]
 struct LinRegression {

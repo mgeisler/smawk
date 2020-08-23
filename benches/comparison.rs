@@ -14,14 +14,14 @@ macro_rules! repeat {
             #[bench]
             fn $row_bench(b: &mut Bencher) {
                 let mut rng = ChaCha20Rng::seed_from_u64(0);
-                let matrix: Array2<i32> = smawk::random_monge_matrix($size, $size, &mut rng);
+                let matrix: Array2<i32> = smawk::monge::random_monge_matrix($size, $size, &mut rng);
                 b.iter(|| $row_func(&matrix));
             }
 
             #[bench]
             fn $column_bench(b: &mut Bencher) {
                 let mut rng = ChaCha20Rng::seed_from_u64(0);
-                let matrix: Array2<i32> = smawk::random_monge_matrix($size, $size, &mut rng).reversed_axes();
+                let matrix: Array2<i32> = smawk::monge::random_monge_matrix($size, $size, &mut rng).reversed_axes();
                 b.iter(|| $column_func(&matrix));
             }
         )*
@@ -36,8 +36,8 @@ repeat!(
         (row_brute_force_200, column_brute_force_200, 200),
         (row_brute_force_400, column_brute_force_400, 400)
     ],
-    smawk::brute_force_row_minima,
-    smawk::brute_force_column_minima
+    smawk::brute_force::row_minima,
+    smawk::brute_force::column_minima
 );
 
 repeat!(
@@ -48,8 +48,8 @@ repeat!(
         (row_recursive_200, column_recursive_200, 200),
         (row_recursive_400, column_recursive_400, 400)
     ],
-    smawk::recursive_row_minima,
-    smawk::recursive_column_minima
+    smawk::recursive::row_minima,
+    smawk::recursive::column_minima
 );
 
 repeat!(
