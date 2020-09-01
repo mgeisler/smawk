@@ -17,9 +17,9 @@ codecov = { repository = "mgeisler/smawk" }
 
 [dependencies]
 ndarray = { version = "0.13", optional = true }
-num-traits = "0.2"
-rand = "0.7"
 
 [dev-dependencies]
 version-sync = "0.9"
+num-traits = "0.2"
+rand = "0.7"
 rand_chacha = "0.2"
