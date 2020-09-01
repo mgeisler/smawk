@@ -2,15 +2,8 @@
 //!
 //! The functions here are mostly meant to be used for testing
 //! correctness of the SMAWK implementation.
-//!
-//! **Note: this module is only available if you enable the `ndarray`
-//! Cargo feature.**
 
 use crate::Matrix;
-use ndarray::{s, Array2};
-use num_traits::PrimInt;
-use rand::distributions::{Distribution, Standard};
-use rand::Rng;
 use std::num::Wrapping;
 use std::ops::Add;
 
@@ -66,150 +59,63 @@ where
         })
 }
 
-/// A Monge matrix can be decomposed into one of these primitive
-/// building blocks.
-#[derive(Copy, Clone)]
-enum MongePrim {
-    ConstantRows,
-    ConstantCols,
-    UpperRightOnes,
-    LowerLeftOnes,
-}
-
-impl MongePrim {
-    /// Generate a Monge matrix from a primitive.
-    fn to_matrix<T: PrimInt, R: Rng>(&self, m: usize, n: usize, rng: &mut R) -> Array2<T>
-    where
-        Standard: Distribution<T>,
-    {
-        let mut matrix = Array2::from_elem((m, n), T::zero());
-        // Avoid panic in UpperRightOnes and LowerLeftOnes below.
-        if m == 0 || n == 0 {
-            return matrix;
-        }
-
-        match *self {
-            MongePrim::ConstantRows => {
-                for mut row in matrix.genrows_mut() {
-                    if rng.gen::<bool>() {
-                        row.fill(T::one())
-                    }
-                }
-            }
-            MongePrim::ConstantCols => {
-                for mut col in matrix.gencolumns_mut() {
-                    if rng.gen::<bool>() {
-                        col.fill(T::one())
-                    }
-                }
-            }
-            MongePrim::UpperRightOnes => {
-                let i = rng.gen_range(0, (m + 1) as isize);
-                let j = rng.gen_range(0, (n + 1) as isize);
-                matrix.slice_mut(s![..i, -j..]).fill(T::one());
-            }
-            MongePrim::LowerLeftOnes => {
-                let i = rng.gen_range(0, (m + 1) as isize);
-                let j = rng.gen_range(0, (n + 1) as isize);
-                matrix.slice_mut(s![-i.., ..j]).fill(T::one());
-            }
-        }
-
-        matrix
-    }
-}
-
-/// Generate a random Monge matrix.
-pub fn random_monge_matrix<R: Rng, T: PrimInt>(m: usize, n: usize, rng: &mut R) -> Array2<T>
-where
-    Standard: Distribution<T>,
-{
-    let monge_primitives = [
-        MongePrim::ConstantRows,
-        MongePrim::ConstantCols,
-        MongePrim::LowerLeftOnes,
-        MongePrim::UpperRightOnes,
-    ];
-    let mut matrix = Array2::from_elem((m, n), T::zero());
-    for _ in 0..(m + n) {
-        let monge = monge_primitives[rng.gen_range(0, monge_primitives.len())];
-        matrix = matrix + monge.to_matrix(m, n, rng);
-    }
-    matrix
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
-    use ndarray::{arr2, Array};
-    use rand::SeedableRng;
-    use rand_chacha::ChaCha20Rng;
 
     #[test]
     fn is_monge_handles_overflow() {
         // The x + y <= z + w computations will overflow for an u8
         // matrix unless is_monge is careful.
-        let matrix: Array2<u8> = arr2(&[
-            [200, 200, 200, 200],
-            [200, 200, 200, 200],
-            [200, 200, 200, 200],
-        ]);
+        let matrix: Vec<Vec<u8>> = vec![
+            vec![200, 200, 200, 200],
+            vec![200, 200, 200, 200],
+            vec![200, 200, 200, 200],
+        ];
         assert!(is_monge(&matrix));
     }
 
     #[test]
     fn monge_constant_rows() {
-        let mut rng = ChaCha20Rng::seed_from_u64(0);
-        let matrix: Array2<u8> = MongePrim::ConstantRows.to_matrix(5, 4, &mut rng);
+        let matrix = vec![
+            vec![42, 42, 42, 42],
+            vec![0, 0, 0, 0],
+            vec![100, 100, 100, 100],
+            vec![1000, 1000, 1000, 1000],
+        ];
         assert!(is_monge(&matrix));
-        for row in matrix.genrows() {
-            let elem = row[0];
-            assert_eq!(row, Array::from_elem(matrix.ncols(), elem));
-        }
     }
 
     #[test]
     fn monge_constant_cols() {
-        let mut rng = ChaCha20Rng::seed_from_u64(0);
-        let matrix: Array2<u8> = MongePrim::ConstantCols.to_matrix(5, 4, &mut rng);
+        let matrix = vec![
+            vec![42, 0, 100, 1000],
+            vec![42, 0, 100, 1000],
+            vec![42, 0, 100, 1000],
+            vec![42, 0, 100, 1000],
+        ];
         assert!(is_monge(&matrix));
-        for column in matrix.gencolumns() {
-            let elem = column[0];
-            assert_eq!(column, Array::from_elem(matrix.nrows(), elem));
-        }
     }
 
     #[test]
-    fn monge_upper_right_ones() {
-        let mut rng = ChaCha20Rng::seed_from_u64(1);
-        let matrix: Array2<u8> = MongePrim::UpperRightOnes.to_matrix(5, 4, &mut rng);
+    fn monge_upper_right() {
+        let matrix = vec![
+            vec![10, 10, 42, 42, 42],
+            vec![10, 10, 42, 42, 42],
+            vec![10, 10, 10, 10, 10],
+            vec![10, 10, 10, 10, 10],
+        ];
         assert!(is_monge(&matrix));
-        assert_eq!(
-            matrix,
-            arr2(&[
-                [0, 0, 1, 1],
-                [0, 0, 1, 1],
-                [0, 0, 1, 1],
-                [0, 0, 0, 0],
-                [0, 0, 0, 0]
-            ])
-        );
     }
 
     #[test]
-    fn monge_lower_left_ones() {
-        let mut rng = ChaCha20Rng::seed_from_u64(1);
-        let matrix: Array2<u8> = MongePrim::LowerLeftOnes.to_matrix(5, 4, &mut rng);
+    fn monge_lower_left() {
+        let matrix = vec![
+            vec![10, 10, 10, 10, 10],
+            vec![10, 10, 10, 10, 10],
+            vec![42, 42, 42, 10, 10],
+            vec![42, 42, 42, 10, 10],
+        ];
         assert!(is_monge(&matrix));
-        assert_eq!(
-            matrix,
-            arr2(&[
-                [0, 0, 0, 0],
-                [0, 0, 0, 0],
-                [1, 1, 0, 0],
-                [1, 1, 0, 0],
-                [1, 1, 0, 0]
-            ])
-        );
     }
 }

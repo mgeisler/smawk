@@ -3,8 +3,11 @@
 use ndarray::{s, Array2};
 use rand::SeedableRng;
 use rand_chacha::ChaCha20Rng;
-use smawk::{brute_force, monge, recursive};
+use smawk::{brute_force, recursive};
 use smawk::{online_column_minima, smawk_column_minima, smawk_row_minima};
+
+mod random_monge;
+use random_monge::random_monge_matrix;
 
 /// Check that the brute force, recursive, and SMAWK functions
 /// give identical results on a large number of randomly generated
@@ -16,7 +19,7 @@ fn column_minima_agree() {
     for _ in 0..4 {
         for m in sizes.clone().iter() {
             for n in sizes.clone().iter() {
-                let matrix: Array2<i32> = monge::random_monge_matrix(*m, *n, &mut rng);
+                let matrix: Array2<i32> = random_monge_matrix(*m, *n, &mut rng);
 
                 // Compute and test row minima.
                 let brute_force = brute_force::row_minima(&matrix);
@@ -63,7 +66,7 @@ fn online_agree() {
         for &size in &sizes {
             // Random totally monotone square matrix of the
             // desired size.
-            let mut matrix: Array2<i32> = monge::random_monge_matrix(size, size, &mut rng);
+            let mut matrix: Array2<i32> = random_monge_matrix(size, size, &mut rng);
 
             // Adjust matrix so the column minima are above the
             // diagonal. The brute_force::column_minima will still

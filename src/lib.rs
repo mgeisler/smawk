@@ -92,7 +92,6 @@
 
 #[cfg(feature = "ndarray")]
 pub mod brute_force;
-#[cfg(feature = "ndarray")]
 pub mod monge;
 #[cfg(feature = "ndarray")]
 pub mod recursive;
