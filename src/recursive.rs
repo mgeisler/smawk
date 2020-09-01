@@ -92,7 +92,10 @@ mod tests {
 
     #[test]
     fn recursive_2x1() {
-        let matrix = arr2(&[[3], [2]]);
+        let matrix = arr2(&[
+            [3], //
+            [2],
+        ]);
         let minima = vec![0, 0];
         assert_eq!(row_minima(&matrix), minima);
         assert_eq!(column_minima(&matrix.reversed_axes()), minima);
@@ -108,7 +111,10 @@ mod tests {
 
     #[test]
     fn recursive_2x2() {
-        let matrix = arr2(&[[3, 2], [2, 1]]);
+        let matrix = arr2(&[
+            [3, 2], //
+            [2, 1],
+        ]);
         let minima = vec![1, 1];
         assert_eq!(row_minima(&matrix), minima);
         assert_eq!(column_minima(&matrix.reversed_axes()), minima);
@@ -116,7 +122,11 @@ mod tests {
 
     #[test]
     fn recursive_3x3() {
-        let matrix = arr2(&[[3, 4, 4], [3, 4, 4], [2, 3, 3]]);
+        let matrix = arr2(&[
+            [3, 4, 4], //
+            [3, 4, 4],
+            [2, 3, 3],
+        ]);
         let minima = vec![0, 0, 0];
         assert_eq!(row_minima(&matrix), minima);
         assert_eq!(column_minima(&matrix.reversed_axes()), minima);
@@ -124,7 +134,12 @@ mod tests {
 
     #[test]
     fn recursive_4x4() {
-        let matrix = arr2(&[[4, 5, 5, 5], [2, 3, 3, 3], [2, 3, 3, 3], [2, 2, 2, 2]]);
+        let matrix = arr2(&[
+            [4, 5, 5, 5], //
+            [2, 3, 3, 3],
+            [2, 3, 3, 3],
+            [2, 2, 2, 2],
+        ]);
         let minima = vec![0, 0, 0, 0];
         assert_eq!(row_minima(&matrix), minima);
         assert_eq!(column_minima(&matrix.reversed_axes()), minima);
