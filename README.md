@@ -47,9 +47,7 @@ implementation. Enable the `ndarray` Cargo feature to use it.
 
 **[API documentation][api-docs]**
 
-## Release History
-
-This is a changelog describing the most important changes per release.
+## Changelog
 
 ### Version 0.2.0 (2020-07-29)
 
