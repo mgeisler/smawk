@@ -13,7 +13,7 @@ for finding the smallest element per row in a totally monotone matrix.
 Add this to your `Cargo.toml`:
 ```toml
 [dependencies]
-smawk = "0.2"
+smawk = "0.3"
 ```
 
 You can now efficiently find row and column minima. Here is an example
@@ -47,11 +47,29 @@ implementation. Enable the `ndarray` Cargo feature to use it.
 
 **[API documentation][api-docs]**
 
-## Release History
+## Changelog
 
-This is a changelog describing the most important changes per release.
+### Version 0.3.0 (2020-09-02)
+
+This release slims down the crate significantly by making `ndarray` an
+optional dependency.
+
+* [#45](https://github.com/mgeisler/smawk/pull/45): Move non-SMAWK
+  code and unit tests out of lib and into separate modules.
+* [#46](https://github.com/mgeisler/smawk/pull/46): Switch
+  `smawk_row_minima` and `smawk_column_minima` functions to a new
+  `Matrix` trait.
+* [#47](https://github.com/mgeisler/smawk/pull/47): Make the
+  dependency on the `ndarray` crate optional.
+* [#48](https://github.com/mgeisler/smawk/pull/48): Let `is_monge` take
+  a `Matrix` argument instead of `ndarray::Array2`.
+* [#50](https://github.com/mgeisler/smawk/pull/50): Remove mandatory
+  dependencies on `rand` and `num-traits` crates.
+
 
 ### Version 0.2.0 (2020-07-29)
+
+This release updates the code to Rust 2018.
 
 * [#18](https://github.com/mgeisler/smawk/pull/18): Make
   `online_column_minima` generic in matrix type.
