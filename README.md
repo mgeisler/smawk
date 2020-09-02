@@ -13,7 +13,7 @@ for finding the smallest element per row in a totally monotone matrix.
 Add this to your `Cargo.toml`:
 ```toml
 [dependencies]
-smawk = "0.2"
+smawk = "0.3"
 ```
 
 You can now efficiently find row and column minima. Here is an example
