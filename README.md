@@ -20,16 +20,15 @@ You can now efficiently find row and column minima. Here is an example
 where we find the column minima:
 
 ```rust
-use ndarray::arr2;
 use smawk::smawk_column_minima;
 
-let matrix = arr2(&[
-    [3, 2, 4, 5, 6],
-    [2, 1, 3, 3, 4],
-    [2, 1, 3, 3, 4],
-    [3, 2, 4, 3, 4],
-    [4, 3, 2, 1, 1],
-]);
+let matrix = vec![
+    vec![3, 2, 4, 5, 6],
+    vec![2, 1, 3, 3, 4],
+    vec![2, 1, 3, 3, 4],
+    vec![3, 2, 4, 3, 4],
+    vec![4, 3, 2, 1, 1],
+];
 let minima = vec![1, 1, 4, 4, 4];
 assert_eq!(smawk_column_minima(&matrix), minima);
 ```
@@ -37,6 +36,12 @@ assert_eq!(smawk_column_minima(&matrix), minima);
 The `minima` vector gives the index of the minimum value per column,
 so `minima[0] == 1` since the minimum value in the first column is 2
 (row 1). Note that the smallest row index is returned.
+
+### Cargo Features
+
+This crate has an optional dependency on the [`ndarray`
+crate](https://docs.rs/ndarray/), which provides an efficient matrix
+implementation. Enable the `ndarray` Cargo feature to use it.
 
 ## Documentation
 
