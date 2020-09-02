@@ -37,6 +37,12 @@ The `minima` vector gives the index of the minimum value per column,
 so `minima[0] == 1` since the minimum value in the first column is 2
 (row 1). Note that the smallest row index is returned.
 
+### Cargo Features
+
+This crate has an optional dependency on the [`ndarray`
+crate](https://docs.rs/ndarray/), which provides an efficient matrix
+implementation. Enable the `ndarray` Cargo feature to use it.
+
 ## Documentation
 
 **[API documentation][api-docs]**
