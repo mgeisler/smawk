@@ -83,10 +83,8 @@
 //! All Monge matrices are totally monotone, so it is enough to
 //! establish that the Monge property holds in order to use a matrix
 //! with the functions in this crate. If your program is dealing with
-//! unknown inputs, it can use [`is_monge`] to verify that a matrix is
-//! a Monge matrix.
-//!
-//! [`is_monge`]: fn.is_monge.html
+//! unknown inputs, it can use [`is_monge`](monge/fn.is_monge.html) to
+//! verify that a matrix is a Monge matrix.
 
 #![doc(html_root_url = "https://docs.rs/smawk/0.2.0")]
 
