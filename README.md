@@ -49,6 +49,23 @@ implementation. Enable the `ndarray` Cargo feature to use it.
 
 ## Changelog
 
+### Version 0.3.0 (2020-09-02)
+
+* [#39](https://github.com/mgeisler/smawk/pull/39): Format issues as a tight list in README
+* [#40](https://github.com/mgeisler/smawk/pull/40): Link build status badge directly to master branch builds
+* [#41](https://github.com/mgeisler/smawk/pull/41): Fix heading level in auto-generated README
+* [#42](https://github.com/mgeisler/smawk/pull/42): Fix all compilation warnings
+* [#43](https://github.com/mgeisler/smawk/pull/43): Simplify maximum computation in test
+* [#44](https://github.com/mgeisler/smawk/pull/44): Cleanup Rust 2015-style `extern crate` statements
+* [#45](https://github.com/mgeisler/smawk/pull/45): Move non-SMAWK code and unit tests out of lib and into separate modules 
+* [#46](https://github.com/mgeisler/smawk/pull/46): Switch smawk_row_minima and smawk_column_minima functions to a new Matrix trait
+* [#47](https://github.com/mgeisler/smawk/pull/47): Make the dependency on the ndarray crate optional
+* [#48](https://github.com/mgeisler/smawk/pull/48): Let is_monge take a Matrix argument instead of ndarray::Array2
+* [#49](https://github.com/mgeisler/smawk/pull/49): Better formatting of multi-row matrices in tests
+* [#50](https://github.com/mgeisler/smawk/pull/50): Remove mandatory dependencies on rand and num-traits crates
+* [#51](https://github.com/mgeisler/smawk/pull/51): Update README to mention ndarray as an optional dependency
+* [#52](https://github.com/mgeisler/smawk/pull/52): Fix docstring link to the is_monge function
+
 ### Version 0.2.0 (2020-07-29)
 
 * [#18](https://github.com/mgeisler/smawk/pull/18): Make
