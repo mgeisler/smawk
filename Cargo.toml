@@ -9,6 +9,7 @@ keywords = ["smawk", "matrix", "optimization", "dynamic-programming"]
 categories = ["algorithms", "science"]
 license = "MIT"
 edition = "2018"
+exclude = [".github/", ".gitignore", "benches/", "examples/"]
 
 [badges]
 travis-ci = { repository = "mgeisler/smawk" }
