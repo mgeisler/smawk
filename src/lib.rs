@@ -83,8 +83,8 @@
 //! All Monge matrices are totally monotone, so it is enough to
 //! establish that the Monge property holds in order to use a matrix
 //! with the functions in this crate. If your program is dealing with
-//! unknown inputs, it can use [`is_monge`](monge/fn.is_monge.html) to
-//! verify that a matrix is a Monge matrix.
+//! unknown inputs, it can use [`monge::is_monge`] to verify that a
+//! matrix is a Monge matrix.
 
 #![doc(html_root_url = "https://docs.rs/smawk/0.3.0")]
 
@@ -98,9 +98,8 @@ pub mod recursive;
 ///
 /// This provides the functionality needed to represent a read-only
 /// numeric matrix. You can query the size of the matrix and access
-/// elements. Modeled after
-/// [`ndarray::Array2`](https://docs.rs/ndarray/latest/ndarray/type.Array2.html)
-/// from the [ndarray crate ](https://crates.io/crates/ndarray).
+/// elements. Modeled after [`ndarray::Array2`] from the [ndarray
+/// crate](https://crates.io/crates/ndarray).
 ///
 /// Enable the `ndarray` Cargo feature if you want to use it with
 /// `ndarray::Array2`.
@@ -118,7 +117,7 @@ pub trait Matrix<T: Copy> {
 ///
 /// You should prefer implementing it yourself, or you can enable the
 /// `ndarray` Cargo feature and use the provided implementation for
-/// `ndarray::Array2`.
+/// [`ndarray::Array2`].
 impl<T: Copy> Matrix<T> for Vec<Vec<T>> {
     fn nrows(&self) -> usize {
         self.len()
@@ -131,7 +130,7 @@ impl<T: Copy> Matrix<T> for Vec<Vec<T>> {
     }
 }
 
-/// Adapting `ndarray::Array2` to the `Matrix` trait.
+/// Adapting [`ndarray::Array2`] to the `Matrix` trait.
 ///
 /// **Note: this implementation is only available if you enable the
 /// `ndarray` Cargo feature.**
