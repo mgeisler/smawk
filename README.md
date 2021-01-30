@@ -8,6 +8,16 @@
 This crate contains an implementation of the [SMAWK algorithm][smawk]
 for finding the smallest element per row in a totally monotone matrix.
 
+The SMAWK algorithm allows you to lower the running time of some
+algorithms from O(*n*²) to just O(*n*). In other words, you can turn a
+quadratic time complexity (which is often too expensive) into linear
+time complexity.
+
+Finding optimal line breaks in a paragraph of text is an example of an
+algorithm which would normally take O(*n*²) time for *n* words. With
+this crate, the running time becomes linear. Please see the [textwrap
+crate][textwrap] for an example of this.
+
 ## Usage
 
 Add this to your `Cargo.toml`:
@@ -106,6 +116,7 @@ Contributions will be accepted under the same license.
 [build-status]: https://github.com/mgeisler/smawk/actions?query=branch%3Amaster+workflow%3Abuild
 [crates-io]: https://crates.io/crates/smawk
 [codecov]: https://codecov.io/gh/mgeisler/smawk
+[textwrap]: https://crates.io/crates/textwrap
 [smawk]: https://en.wikipedia.org/wiki/SMAWK_algorithm
 [api-docs]: https://docs.rs/smawk/
 [rust-2018]: https://doc.rust-lang.org/edition-guide/rust-2018/
