@@ -48,13 +48,13 @@ impl MongePrim {
                 }
             }
             MongePrim::UpperRightOnes => {
-                let i = rng.gen_range(0, (m + 1) as isize);
-                let j = rng.gen_range(0, (n + 1) as isize);
+                let i = rng.gen_range(0..(m + 1) as isize);
+                let j = rng.gen_range(0..(n + 1) as isize);
                 matrix.slice_mut(s![..i, -j..]).fill(T::one());
             }
             MongePrim::LowerLeftOnes => {
-                let i = rng.gen_range(0, (m + 1) as isize);
-                let j = rng.gen_range(0, (n + 1) as isize);
+                let i = rng.gen_range(0..(m + 1) as isize);
+                let j = rng.gen_range(0..(n + 1) as isize);
                 matrix.slice_mut(s![-i.., ..j]).fill(T::one());
             }
         }
@@ -76,7 +76,7 @@ where
     ];
     let mut matrix = Array2::from_elem((m, n), T::zero());
     for _ in 0..(m + n) {
-        let monge = monge_primitives[rng.gen_range(0, monge_primitives.len())];
+        let monge = monge_primitives[rng.gen_range(0..monge_primitives.len())];
         matrix = matrix + monge.to_matrix(m, n, rng);
     }
     matrix
