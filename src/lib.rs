@@ -86,7 +86,7 @@
 //! unknown inputs, it can use [`monge::is_monge`] to verify that a
 //! matrix is a Monge matrix.
 
-#![doc(html_root_url = "https://docs.rs/smawk/0.3.0")]
+#![doc(html_root_url = "https://docs.rs/smawk/0.3.1")]
 
 #[cfg(feature = "ndarray")]
 pub mod brute_force;
