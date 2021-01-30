@@ -167,7 +167,7 @@ impl<T: Copy> Matrix<T> for ndarray::Array2<T> {
 /// # Panics
 ///
 /// It is an error to call this on a matrix with zero columns.
-pub fn smawk_row_minima<T: Ord + Copy, M: Matrix<T>>(matrix: &M) -> Vec<usize> {
+pub fn smawk_row_minima<T: PartialOrd + Copy, M: Matrix<T>>(matrix: &M) -> Vec<usize> {
     // Benchmarking shows that SMAWK performs roughly the same on row-
     // and column-major matrices.
     let mut minima = vec![0; matrix.nrows()];
@@ -197,7 +197,7 @@ pub fn smawk_row_minima<T: Ord + Copy, M: Matrix<T>>(matrix: &M) -> Vec<usize> {
 /// # Panics
 ///
 /// It is an error to call this on a matrix with zero rows.
-pub fn smawk_column_minima<T: Ord + Copy, M: Matrix<T>>(matrix: &M) -> Vec<usize> {
+pub fn smawk_column_minima<T: PartialOrd + Copy, M: Matrix<T>>(matrix: &M) -> Vec<usize> {
     let mut minima = vec![0; matrix.ncols()];
     smawk_inner(
         &|i, j| matrix.index(i, j),
@@ -210,7 +210,7 @@ pub fn smawk_column_minima<T: Ord + Copy, M: Matrix<T>>(matrix: &M) -> Vec<usize
 
 /// Compute column minima in the given area of the matrix. The
 /// `minima` slice is updated inplace.
-fn smawk_inner<T: Ord + Copy, M: Fn(usize, usize) -> T>(
+fn smawk_inner<T: PartialOrd + Copy, M: Fn(usize, usize) -> T>(
     matrix: &M,
     rows: &[usize],
     cols: &[usize],
@@ -256,7 +256,9 @@ fn smawk_inner<T: Ord + Copy, M: Fn(usize, usize) -> T>(
         while row != last_row {
             r += 1;
             row = rows[r];
-            pair = std::cmp::min(pair, (matrix(row, col), row));
+            if (matrix(row, col), row) < pair {
+                pair = (matrix(row, col), row);
+            }
         }
         minima[col] = pair.1;
     }
@@ -288,7 +290,7 @@ fn smawk_inner<T: Ord + Copy, M: Fn(usize, usize) -> T>(
 /// call `matrix(i, j)` after having computed `v(i)`. This is
 /// reflected in the `&[(usize, T)]` argument to `matrix`, which grows
 /// as more and more values are computed.
-pub fn online_column_minima<T: Copy + Ord, M: Fn(&[(usize, T)], usize, usize) -> T>(
+pub fn online_column_minima<T: Copy + PartialOrd, M: Fn(&[(usize, T)], usize, usize) -> T>(
     initial: T,
     size: usize,
     matrix: M,
@@ -505,4 +507,25 @@ mod tests {
         let minima = vec![(0, 0), (0, 2), (1, 3), (2, 3), (2, 4)];
         assert_eq!(online_column_minima(0, 5, |_, i, j| matrix[i][j]), minima);
     }
+
+    #[test]
+    fn smawk_works_with_partial_ord() {
+        let matrix = vec![
+            vec![3.0, 2.0], //
+            vec![2.0, 1.0],
+        ];
+        assert_eq!(smawk_row_minima(&matrix), vec![1, 1]);
+        assert_eq!(smawk_column_minima(&matrix), vec![1, 1]);
+    }
+
+    #[test]
+    fn online_works_with_partial_ord() {
+        let matrix = vec![
+            vec![0.0, 2.0], //
+            vec![0.0, 0.0],
+        ];
+        let minima = vec![(0, 0.0), (0, 2.0)];
+        assert_eq!(online_column_minima(0.0, 2, |_, i:usize, j:usize| matrix[i][j]), minima);
+    }
+
 }
