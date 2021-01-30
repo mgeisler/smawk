@@ -59,6 +59,19 @@ implementation. Enable the `ndarray` Cargo feature to use it.
 
 ## Changelog
 
+### Version 0.3.1 (2021-01-30)
+
+This release relaxes the bounds on the `smawk_row_minima`,
+`smawk_column_minima`, and `online_column_minima` functions so that
+they work on matrices containing floating point numbers.
+
+* [#55](https://github.com/mgeisler/smawk/pull/55): Relax bounds to
+  `PartialOrd` instead of `Ord`.
+* [#56](https://github.com/mgeisler/smawk/pull/56): Update
+  dependencies to their latest versions.
+* [#59](https://github.com/mgeisler/smawk/pull/59): Give an example of
+  what SMAWK does in the README.
+
 ### Version 0.3.0 (2020-09-02)
 
 This release slims down the crate significantly by making `ndarray` an
