@@ -53,7 +53,7 @@ where
             ) {
                 (Ok(a), Ok(b)) => a <= b,   // No overflow.
                 (Err(a), Err(b)) => a <= b, // Double overflow.
-                (Ok(_), Err(_)) => true,    // Antidiagonal overflow.
+                (Ok(_), Err(_)) => true,    // Anti-diagonal overflow.
                 (Err(_), Ok(_)) => false,   // Main diagonal overflow.
             }
         })
