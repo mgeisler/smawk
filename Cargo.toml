@@ -11,11 +11,6 @@ license = "MIT"
 edition = "2018"
 exclude = [".github/", ".gitignore", "benches/", "examples/"]
 
-[badges]
-travis-ci = { repository = "mgeisler/smawk" }
-appveyor = { repository = "mgeisler/smawk" }
-codecov = { repository = "mgeisler/smawk" }
-
 [dependencies]
 ndarray = { version = "0.14", optional = true }
 
