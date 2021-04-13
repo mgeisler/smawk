@@ -31,7 +31,7 @@ fn monge_constant_rows() {
     let mut rng = ChaCha20Rng::seed_from_u64(0);
     let matrix: Array2<u8> = MongePrim::ConstantRows.to_matrix(5, 4, &mut rng);
     assert!(is_monge(&matrix));
-    for row in matrix.genrows() {
+    for row in matrix.rows() {
         let elem = row[0];
         assert_eq!(row, Array::from_elem(matrix.ncols(), elem));
     }
@@ -42,7 +42,7 @@ fn monge_constant_cols() {
     let mut rng = ChaCha20Rng::seed_from_u64(0);
     let matrix: Array2<u8> = MongePrim::ConstantCols.to_matrix(5, 4, &mut rng);
     assert!(is_monge(&matrix));
-    for column in matrix.gencolumns() {
+    for column in matrix.columns() {
         let elem = column[0];
         assert_eq!(column, Array::from_elem(matrix.nrows(), elem));
     }

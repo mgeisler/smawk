@@ -26,7 +26,7 @@ pub fn lane_minimum<T: Ord>(lane: ArrayView1<'_, T>) -> usize {
 ///
 /// It is an error to call this on a matrix with zero columns.
 pub fn row_minima<T: Ord>(matrix: &Array2<T>) -> Vec<usize> {
-    matrix.genrows().into_iter().map(lane_minimum).collect()
+    matrix.rows().into_iter().map(lane_minimum).collect()
 }
 
 /// Compute column minima by brute force in O(*mn*) time.
@@ -35,7 +35,7 @@ pub fn row_minima<T: Ord>(matrix: &Array2<T>) -> Vec<usize> {
 ///
 /// It is an error to call this on a matrix with zero rows.
 pub fn column_minima<T: Ord>(matrix: &Array2<T>) -> Vec<usize> {
-    matrix.gencolumns().into_iter().map(lane_minimum).collect()
+    matrix.columns().into_iter().map(lane_minimum).collect()
 }
 
 #[cfg(test)]

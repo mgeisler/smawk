@@ -34,14 +34,14 @@ impl MongePrim {
 
         match *self {
             MongePrim::ConstantRows => {
-                for mut row in matrix.genrows_mut() {
+                for mut row in matrix.rows_mut() {
                     if rng.gen::<bool>() {
                         row.fill(T::one())
                     }
                 }
             }
             MongePrim::ConstantCols => {
-                for mut col in matrix.gencolumns_mut() {
+                for mut col in matrix.columns_mut() {
                     if rng.gen::<bool>() {
                         col.fill(T::one())
                     }
