@@ -40,8 +40,8 @@ fn linear_regression(values: &[(usize, i32)]) -> LinRegression {
     let ys_mean = mean!(&ys);
     let xs_ys_mean = mean!(&xs * &ys);
 
-    let cov_xs_ys = ((&xs - xs_mean) * (&ys - ys_mean)).scalar_sum();
-    let var_xs = squared!(&xs - xs_mean).scalar_sum();
+    let cov_xs_ys = ((&xs - xs_mean) * (&ys - ys_mean)).sum();
+    let var_xs = squared!(&xs - xs_mean).sum();
 
     let beta = cov_xs_ys / var_xs;
     let alpha = ys_mean - beta * xs_mean;
