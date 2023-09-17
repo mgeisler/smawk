@@ -65,6 +65,6 @@ repeat!(
         (row_smawk_200, column_smawk_200, 200),
         (row_smawk_400, column_smawk_400, 400)
     ],
-    smawk::smawk_row_minima,
-    smawk::smawk_column_minima
+    smawk::row_minima,
+    smawk::column_minima
 );

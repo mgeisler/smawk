@@ -30,7 +30,7 @@ You can now efficiently find row and column minima. Here is an example where we
 find the column minima:
 
 ```rust
-use smawk::smawk_column_minima;
+use smawk::Matrix;
 
 let matrix = vec![
     vec![3, 2, 4, 5, 6],
@@ -40,7 +40,7 @@ let matrix = vec![
     vec![4, 3, 2, 1, 1],
 ];
 let minima = vec![1, 1, 4, 4, 4];
-assert_eq!(smawk_column_minima(&matrix), minima);
+assert_eq!(smawk::column_minima(&matrix), minima);
 ```
 
 The `minima` vector gives the index of the minimum value per column, so
