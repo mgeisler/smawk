@@ -86,7 +86,7 @@
 //! unknown inputs, it can use [`monge::is_monge`] to verify that a
 //! matrix is a Monge matrix.
 
-#![doc(html_root_url = "https://docs.rs/smawk/0.3.1")]
+#![doc(html_root_url = "https://docs.rs/smawk/0.3.2")]
 // The s! macro from ndarray uses unsafe internally, so we can only
 // forbid unsafe code when building with the default features.
 #![cfg_attr(not(feature = "ndarray"), forbid(unsafe_code))]
