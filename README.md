@@ -59,6 +59,23 @@ implementation. Enable the `ndarray` Cargo feature to use it.
 
 ## Changelog
 
+### Version 0.3.2 (2023-09-17)
+
+This release adds more documentation and renames the top-level SMAWK functions.
+The old names have been kept for now to ensure backwards compatibility, but they
+will be removed in a future release.
+
+- [#65](https://github.com/mgeisler/smawk/pull/65): Forbid the use of unsafe
+  code.
+- [#69](https://github.com/mgeisler/smawk/pull/69): Migrate to the Rust 2021
+  edition.
+- [#73](https://github.com/mgeisler/smawk/pull/73): Add examples to all
+  functions.
+- [#74](https://github.com/mgeisler/smawk/pull/74): Add “mathematics” as a crate
+  category.
+- [#75](https://github.com/mgeisler/smawk/pull/75): Remove `smawk_` prefix from
+  optimized functions.
+
 ### Version 0.3.1 (2021-01-30)
 
 This release relaxes the bounds on the `smawk_row_minima`,
