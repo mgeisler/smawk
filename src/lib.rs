@@ -155,21 +155,33 @@ impl<T: Copy> Matrix<T> for ndarray::Array2<T> {
 
 /// Compute row minima in O(*m* + *n*) time.
 ///
-/// This implements the SMAWK algorithm for finding row minima in a
-/// totally monotone matrix.
+/// This implements the [SMAWK algorithm] for efficiently finding row
+/// minima in a totally monotone matrix.
 ///
 /// The SMAWK algorithm is from Agarwal, Klawe, Moran, Shor, and
 /// Wilbur, *Geometric applications of a matrix searching algorithm*,
 /// Algorithmica 2, pp. 195-208 (1987) and the code here is a
 /// translation [David Eppstein's Python code][pads].
 ///
-/// [pads]: https://github.com/jfinkels/PADS/blob/master/pads/smawk.py
-///
 /// Running time on an *m* ✕ *n* matrix: O(*m* + *n*).
+///
+/// # Examples
+///
+/// ```
+/// use smawk::{Matrix, smawk_row_minima};
+/// let matrix = vec![vec![4, 2, 4, 3],
+///                   vec![5, 3, 5, 3],
+///                   vec![5, 3, 3, 1]];
+/// assert_eq!(smawk_row_minima(&matrix),
+///            vec![1, 1, 3]);
+/// ```
 ///
 /// # Panics
 ///
 /// It is an error to call this on a matrix with zero columns.
+///
+/// [pads]: https://github.com/jfinkels/PADS/blob/master/pads/smawk.py
+/// [SMAWK algorithm]: https://en.wikipedia.org/wiki/SMAWK_algorithm
 pub fn smawk_row_minima<T: PartialOrd + Copy, M: Matrix<T>>(matrix: &M) -> Vec<usize> {
     // Benchmarking shows that SMAWK performs roughly the same on row-
     // and column-major matrices.
@@ -185,21 +197,33 @@ pub fn smawk_row_minima<T: PartialOrd + Copy, M: Matrix<T>>(matrix: &M) -> Vec<u
 
 /// Compute column minima in O(*m* + *n*) time.
 ///
-/// This implements the SMAWK algorithm for finding column minima in a
-/// totally monotone matrix.
+/// This implements the [SMAWK algorithm] for efficiently finding
+/// column minima in a totally monotone matrix.
 ///
 /// The SMAWK algorithm is from Agarwal, Klawe, Moran, Shor, and
 /// Wilbur, *Geometric applications of a matrix searching algorithm*,
 /// Algorithmica 2, pp. 195-208 (1987) and the code here is a
 /// translation [David Eppstein's Python code][pads].
 ///
-/// [pads]: https://github.com/jfinkels/PADS/blob/master/pads/smawk.py
-///
 /// Running time on an *m* ✕ *n* matrix: O(*m* + *n*).
+///
+/// # Examples
+///
+/// ```
+/// use smawk::{Matrix, smawk_column_minima};
+/// let matrix = vec![vec![4, 2, 4, 3],
+///                   vec![5, 3, 5, 3],
+///                   vec![5, 3, 3, 1]];
+/// assert_eq!(smawk_column_minima(&matrix),
+///            vec![0, 0, 2, 2]);
+/// ```
 ///
 /// # Panics
 ///
 /// It is an error to call this on a matrix with zero rows.
+///
+/// [SMAWK algorithm]: https://en.wikipedia.org/wiki/SMAWK_algorithm
+/// [pads]: https://github.com/jfinkels/PADS/blob/master/pads/smawk.py
 pub fn smawk_column_minima<T: PartialOrd + Copy, M: Matrix<T>>(matrix: &M) -> Vec<usize> {
     let mut minima = vec![0; matrix.ncols()];
     smawk_inner(

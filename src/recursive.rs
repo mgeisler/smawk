@@ -10,6 +10,21 @@ use ndarray::{s, Array2, ArrayView2, Axis};
 
 /// Compute row minima in O(*m* + *n* log *m*) time.
 ///
+/// This function computes row minima in a totally monotone matrix
+/// using a recursive algorithm.
+///
+/// Running time on an *m* ✕ *n* matrix: O(*m* + *n* log *m*).
+///
+/// # Examples
+///
+/// ```
+/// let matrix = ndarray::arr2(&[[4, 2, 4, 3],
+///                              [5, 3, 5, 3],
+///                              [5, 3, 3, 1]]);
+/// assert_eq!(smawk::recursive::row_minima(&matrix),
+///            vec![1, 1, 3]);
+/// ```
+///
 /// # Panics
 ///
 /// It is an error to call this on a matrix with zero columns.
@@ -20,6 +35,21 @@ pub fn row_minima<T: Ord>(matrix: &Array2<T>) -> Vec<usize> {
 }
 
 /// Compute column minima in O(*n* + *m* log *n*) time.
+///
+/// This function computes column minima in a totally monotone matrix
+/// using a recursive algorithm.
+///
+/// Running time on an *m* ✕ *n* matrix: O(*n* + *m* log *n*).
+///
+/// # Examples
+///
+/// ```
+/// let matrix = ndarray::arr2(&[[4, 2, 4, 3],
+///                              [5, 3, 5, 3],
+///                              [5, 3, 3, 1]]);
+/// assert_eq!(smawk::recursive::column_minima(&matrix),
+///            vec![0, 0, 2, 2]);
+/// ```
 ///
 /// # Panics
 ///
