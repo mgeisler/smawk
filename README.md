@@ -9,11 +9,11 @@ This crate contains an implementation of the [SMAWK algorithm][smawk] for
 finding the smallest element per row in a totally monotone matrix.
 
 The SMAWK algorithm allows you to lower the running time of some algorithms from
-O(_n_²) to just O(_n_). In other words, you can turn a quadratic time complexity
+O(*n*²) to just O(_n_). In other words, you can turn a quadratic time complexity
 (which is often too expensive) into linear time complexity.
 
 Finding optimal line breaks in a paragraph of text is an example of an algorithm
-which would normally take O(_n_²) time for _n_ words. With this crate, the
+which would normally take O(*n*²) time for _n_ words. With this crate, the
 running time becomes linear. Please see the [textwrap crate][textwrap] for an
 example of this.
 
