@@ -217,7 +217,7 @@ fn smawk_inner<T: PartialOrd + Copy, M: Fn(usize, usize) -> T>(
     matrix: &M,
     rows: &[usize],
     cols: &[usize],
-    mut minima: &mut [usize],
+    minima: &mut [usize],
 ) {
     if cols.is_empty() {
         return;
@@ -245,7 +245,7 @@ fn smawk_inner<T: PartialOrd + Copy, M: Fn(usize, usize) -> T>(
         }
     }
 
-    smawk_inner(matrix, rows, &odd_cols, &mut minima);
+    smawk_inner(matrix, rows, &odd_cols, minima);
 
     let mut r = 0;
     for (c, &col) in cols.iter().enumerate().filter(|(c, _)| c % 2 == 0) {
