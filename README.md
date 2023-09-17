@@ -23,7 +23,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-smawk = "0.3"
+smawk = "0.4"
 ```
 
 You can now efficiently find row and column minima. Here is an example where we
