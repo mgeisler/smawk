@@ -165,6 +165,17 @@ impl<T: Copy> Matrix<T> for ndarray::Array2<T> {
 ///
 /// Running time on an *m* ✕ *n* matrix: O(*m* + *n*).
 ///
+/// # Examples
+///
+/// ```
+/// use smawk::{Matrix, smawk_row_minima};
+/// let matrix = vec![vec![4, 2, 4, 3],
+///                   vec![5, 3, 5, 3],
+///                   vec![5, 3, 3, 1]];
+/// assert_eq!(smawk_row_minima(&matrix),
+///            vec![1, 1, 3]);
+/// ```
+///
 /// # Panics
 ///
 /// It is an error to call this on a matrix with zero columns.
@@ -195,6 +206,17 @@ pub fn smawk_row_minima<T: PartialOrd + Copy, M: Matrix<T>>(matrix: &M) -> Vec<u
 /// translation [David Eppstein's Python code][pads].
 ///
 /// Running time on an *m* ✕ *n* matrix: O(*m* + *n*).
+///
+/// # Examples
+///
+/// ```
+/// use smawk::{Matrix, smawk_column_minima};
+/// let matrix = vec![vec![4, 2, 4, 3],
+///                   vec![5, 3, 5, 3],
+///                   vec![5, 3, 3, 1]];
+/// assert_eq!(smawk_column_minima(&matrix),
+///            vec![0, 0, 2, 2]);
+/// ```
 ///
 /// # Panics
 ///
