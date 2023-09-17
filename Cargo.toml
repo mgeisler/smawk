@@ -2,20 +2,20 @@
 name = "smawk"
 version = "0.3.1"
 authors = ["Martin Geisler <martin@geisler.net>"]
-description = "Functions for finding row-minima in a totally monotone matrix."
-repository = "https://github.com/mgeisler/smawk"
-readme = "README.md"
-keywords = ["smawk", "matrix", "optimization", "dynamic-programming"]
 categories = ["algorithms", "science"]
-license = "MIT"
 edition = "2021"
 exclude = [".github/", ".gitignore", "benches/", "examples/"]
+keywords = ["smawk", "matrix", "optimization", "dynamic-programming"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/mgeisler/smawk"
+description = "Functions for finding row-minima in a totally monotone matrix."
 
 [dependencies]
 ndarray = { version = "0.15.4", optional = true }
 
 [dev-dependencies]
-version-sync = "0.9.4"
 num-traits = "0.2.14"
 rand = "0.8.4"
 rand_chacha = "0.3.1"
+version-sync = "0.9.4"
