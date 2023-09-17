@@ -195,6 +195,11 @@ pub fn row_minima<T: PartialOrd + Copy, M: Matrix<T>>(matrix: &M) -> Vec<usize> 
     minima
 }
 
+#[deprecated(since = "0.3.2", note = "Please use `row_minima` instead.")]
+pub fn smawk_row_minima<T: PartialOrd + Copy, M: Matrix<T>>(matrix: &M) -> Vec<usize> {
+    row_minima(matrix)
+}
+
 /// Compute column minima in O(*m* + *n*) time.
 ///
 /// This implements the [SMAWK algorithm] for efficiently finding
@@ -233,6 +238,11 @@ pub fn column_minima<T: PartialOrd + Copy, M: Matrix<T>>(matrix: &M) -> Vec<usiz
         &mut minima,
     );
     minima
+}
+
+#[deprecated(since = "0.3.2", note = "Please use `column_minima` instead.")]
+pub fn smawk_column_minima<T: PartialOrd + Copy, M: Matrix<T>>(matrix: &M) -> Vec<usize> {
+    column_minima(matrix)
 }
 
 /// Compute column minima in the given area of the matrix. The
