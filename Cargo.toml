@@ -2,7 +2,7 @@
 name = "smawk"
 version = "0.3.1"
 authors = ["Martin Geisler <martin@geisler.net>"]
-categories = ["algorithms", "science"]
+categories = ["algorithms", "mathematics", "science"]
 edition = "2021"
 exclude = [".github/", ".gitignore", "benches/", "examples/"]
 keywords = ["smawk", "matrix", "optimization", "dynamic-programming"]
