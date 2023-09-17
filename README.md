@@ -59,6 +59,25 @@ implementation. Enable the `ndarray` Cargo feature to use it.
 
 ## Changelog
 
+### Version 0.4.0 (2023-09-17)
+
+* [#61](https://github.com/mgeisler/smawk/pull/61): Bump github-scripts to version 3
+* [#62](https://github.com/mgeisler/smawk/pull/62): Remove unused [badges] section from Cargo.toml
+* [#63](https://github.com/mgeisler/smawk/pull/63): Fix typo in comment
+* [#64](https://github.com/mgeisler/smawk/pull/64): Bump optional ndarray dependency to 0.15
+* [#65](https://github.com/mgeisler/smawk/pull/65): Forbid the use of unsafe code
+* [#66](https://github.com/mgeisler/smawk/pull/66): Run `cargo fmt` on the code
+* [#67](https://github.com/mgeisler/smawk/pull/67): Setup weekly builds to detect build failures on nightly Rust
+* [#68](https://github.com/mgeisler/smawk/pull/68): Use precise dependency versions in Cargo.toml
+* [#69](https://github.com/mgeisler/smawk/pull/69): Migrate to the Rust 2021 edition
+* [#70](https://github.com/mgeisler/smawk/pull/70): Apply Clippy fixes
+* [#71](https://github.com/mgeisler/smawk/pull/71): Format with `dprint`
+* [#72](https://github.com/mgeisler/smawk/pull/72): Remove cron setting from build workflow
+* [#73](https://github.com/mgeisler/smawk/pull/73): Add examples to all functions
+* [#74](https://github.com/mgeisler/smawk/pull/74): Add “mathematics” as a crate category
+* [#75](https://github.com/mgeisler/smawk/pull/75): Remove `smawk_` prefix from optimized functions
+* [#76](https://github.com/mgeisler/smawk/pull/76): Use module import granularity
+
 ### Version 0.3.1 (2021-01-30)
 
 This release relaxes the bounds on the `smawk_row_minima`,
