@@ -3,8 +3,7 @@
 use ndarray::{s, Array2};
 use rand::SeedableRng;
 use rand_chacha::ChaCha20Rng;
-use smawk::online_column_minima;
-use smawk::{brute_force, recursive};
+use smawk::{brute_force, online_column_minima, recursive};
 
 mod random_monge;
 use random_monge::random_monge_matrix;
