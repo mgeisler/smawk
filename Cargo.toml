@@ -12,7 +12,7 @@ repository = "https://github.com/mgeisler/smawk"
 description = "Functions for finding row-minima in a totally monotone matrix."
 
 [dependencies]
-ndarray = { version = "0.17.1", optional = true }
+ndarray = { version = "0.17.1", optional = true, default-features = false }
 
 [dev-dependencies]
 divan = "0.1.21"

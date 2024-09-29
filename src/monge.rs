@@ -4,8 +4,8 @@
 //! correctness of the SMAWK implementation.
 
 use crate::Matrix;
-use std::num::Wrapping;
-use std::ops::Add;
+use core::num::Wrapping;
+use core::ops::Add;
 
 /// Verify that a matrix is a Monge matrix.
 ///
@@ -62,6 +62,8 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+    use alloc::vec;
+    use alloc::vec::Vec;
 
     #[test]
     fn is_monge_handles_overflow() {

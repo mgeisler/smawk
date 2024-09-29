@@ -6,6 +6,7 @@
 //! **Note: this module is only available if you enable the `ndarray`
 //! Cargo feature.**
 
+use alloc::vec::Vec;
 use ndarray::{Array2, ArrayView1};
 
 /// Compute lane minimum by brute force.
@@ -69,6 +70,7 @@ pub fn column_minima<T: Ord>(matrix: &Array2<T>) -> Vec<usize> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use alloc::vec;
     use ndarray::arr2;
 
     #[test]

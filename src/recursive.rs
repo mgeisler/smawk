@@ -6,6 +6,8 @@
 //! **Note: this module is only available if you enable the `ndarray`
 //! Cargo feature.**
 
+use alloc::vec;
+use alloc::vec::Vec;
 use ndarray::{s, Array2, ArrayView2, Axis};
 
 /// Compute row minima in O(*m* + *n* log *m*) time.
