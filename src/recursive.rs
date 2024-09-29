@@ -80,7 +80,7 @@ enum Direction {
 /// The direction is given as a generic function argument to allow
 /// monomorphization to kick in. The function calls will be inlined
 /// and optimized away and the result is that the compiler generates
-/// differnet code for finding row and column minima.
+/// different code for finding row and column minima.
 fn recursive_inner<T: Ord, F: Fn() -> Direction>(
     matrix: ArrayView2<'_, T>,
     dir: &F,
