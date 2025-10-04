@@ -2,29 +2,40 @@ name: coverage
 
 on:
   push:
-    branches:
-      - master
+    branches: [master]
+  pull_request:
+    branches: [master]
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
   coverage:
-    name: Generate coverage
+    name: Code Coverage
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        features:
-          - no-default-features
-          - all-features
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Run cargo-tarpaulin
-        uses: actions-rs/tarpaulin@v0.1
+      - uses: Swatinem/rust-cache@v2
         with:
-          args: "--${{ matrix.features }}"
+          # Avoid PRs filling up the cache.
+          save-if: ${{ github.ref == 'refs/heads/main' }}
 
-      - name: Upload to codecov.io
-        uses: codecov/codecov-action@v1
+      - name: Install cargo-llvm-cov
+        uses: taiki-e/install-action@cargo-llvm-cov
+
+      - name: Coverage for no default features
+        run: cargo llvm-cov test --locked --no-report --no-default-features
+
+      - name: Coverage for all features
+        run: cargo llvm-cov test --locked --no-report --all-features
+
+      - name: Generate coverage report
+        run: cargo llvm-cov report --lcov --output-path lcov.info
+
+      - name: Upload coverage report to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: lcov.info
