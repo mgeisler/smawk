@@ -73,6 +73,11 @@ fn online_linear_complexity() {
     }
 
     let lin_reg = linear_regression(&data);
+    println!(
+        "Linear regression:\n  α  = {:6.2}\n  β  = {:6.2}\n  r² = {:6.2}",
+        lin_reg.alpha, lin_reg.beta, lin_reg.r_squared
+    );
+
     assert!(
         lin_reg.r_squared > 0.95,
         "r² = {:.4} is lower than expected for a linear fit\nData points: {:?}\n{:?}",
