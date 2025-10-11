@@ -13,7 +13,7 @@ use ndarray::{s, Array2, ArrayView2, Axis};
 /// This function computes row minima in a totally monotone matrix
 /// using a recursive algorithm.
 ///
-/// Running time on an *m* ✕ *n* matrix: O(*m* + *n* log *m*).
+/// Running time on an *m* × *n* matrix: O(*m* + *n* log *m*).
 ///
 /// # Examples
 ///
@@ -39,7 +39,7 @@ pub fn row_minima<T: Ord>(matrix: &Array2<T>) -> Vec<usize> {
 /// This function computes column minima in a totally monotone matrix
 /// using a recursive algorithm.
 ///
-/// Running time on an *m* ✕ *n* matrix: O(*n* + *m* log *n*).
+/// Running time on an *m* × *n* matrix: O(*n* + *m* log *n*).
 ///
 /// # Examples
 ///
