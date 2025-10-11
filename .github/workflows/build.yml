@@ -24,6 +24,11 @@ jobs:
       - name: Install ${{ matrix.rust }} Rust
         run: rustup default ${{ matrix.rust }}
 
+      - uses: Swatinem/rust-cache@v2
+        with:
+          # Avoid PRs filling up the cache.
+          save-if: ${{ github.ref == 'refs/heads/master' }}
+
       # Quick smoke test to detect serious brokenness.
       - name: Build with default features
         run: cargo build
