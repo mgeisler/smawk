@@ -49,9 +49,9 @@ fn linear_regression(values: &[(usize, i32)]) -> LinRegression {
         / ((mean!(&xs * &xs) - squared!(xs_mean)) * (mean!(&ys * &ys) - squared!(ys_mean)));
 
     LinRegression {
-        alpha: alpha,
-        beta: beta,
-        r_squared: r_squared,
+        alpha,
+        beta,
+        r_squared,
     }
 }
 
