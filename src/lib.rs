@@ -562,9 +562,6 @@ mod tests {
             vec![0.0, 0.0],
         ];
         let minima = vec![(0, 0.0), (0, 2.0)];
-        assert_eq!(
-            online_column_minima(0.0, 2, |_, i: usize, j: usize| matrix[i][j]),
-            minima
-        );
+        assert_eq!(online_column_minima(0.0, 2, |_, i, j| matrix[i][j]), minima);
     }
 }
