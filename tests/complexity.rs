@@ -1,8 +1,8 @@
 #![cfg(feature = "ndarray")]
 
 use ndarray::{Array1, Array2};
+use rand::rngs::StdRng;
 use rand::SeedableRng;
-use rand_chacha::ChaCha20Rng;
 use smawk::online_column_minima;
 
 mod random_monge;
@@ -59,7 +59,7 @@ fn linear_regression(values: &[(usize, i32)]) -> LinRegression {
 /// grows as O(*n*) for *n* ✕ *n* matrix.
 #[test]
 fn online_linear_complexity() {
-    let mut rng = ChaCha20Rng::seed_from_u64(0);
+    let mut rng = StdRng::seed_from_u64(0);
     let mut data = vec![];
 
     for &size in &[1, 2, 3, 4, 5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100] {

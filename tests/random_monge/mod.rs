@@ -7,7 +7,7 @@
 
 use ndarray::{s, Array2};
 use num_traits::PrimInt;
-use rand::distributions::{Distribution, Standard};
+use rand::distr::{Distribution, StandardUniform};
 use rand::Rng;
 
 /// A Monge matrix can be decomposed into one of these primitive
@@ -24,7 +24,7 @@ impl MongePrim {
     /// Generate a Monge matrix from a primitive.
     pub fn to_matrix<T: PrimInt, R: Rng>(&self, m: usize, n: usize, rng: &mut R) -> Array2<T>
     where
-        Standard: Distribution<T>,
+        StandardUniform: Distribution<T>,
     {
         let mut matrix = Array2::from_elem((m, n), T::zero());
         // Avoid panic in UpperRightOnes and LowerLeftOnes below.
@@ -35,26 +35,26 @@ impl MongePrim {
         match *self {
             MongePrim::ConstantRows => {
                 for mut row in matrix.rows_mut() {
-                    if rng.gen::<bool>() {
+                    if rng.random::<bool>() {
                         row.fill(T::one())
                     }
                 }
             }
             MongePrim::ConstantCols => {
                 for mut col in matrix.columns_mut() {
-                    if rng.gen::<bool>() {
+                    if rng.random::<bool>() {
                         col.fill(T::one())
                     }
                 }
             }
             MongePrim::UpperRightOnes => {
-                let i = rng.gen_range(0..(m + 1) as isize);
-                let j = rng.gen_range(0..(n + 1) as isize);
+                let i = rng.random_range(0..m + 1) as isize;
+                let j = rng.random_range(0..n + 1) as isize;
                 matrix.slice_mut(s![..i, -j..]).fill(T::one());
             }
             MongePrim::LowerLeftOnes => {
-                let i = rng.gen_range(0..(m + 1) as isize);
-                let j = rng.gen_range(0..(n + 1) as isize);
+                let i = rng.random_range(0..m + 1) as isize;
+                let j = rng.random_range(0..n + 1) as isize;
                 matrix.slice_mut(s![-i.., ..j]).fill(T::one());
             }
         }
@@ -66,7 +66,7 @@ impl MongePrim {
 /// Generate a random Monge matrix.
 pub fn random_monge_matrix<R: Rng, T: PrimInt>(m: usize, n: usize, rng: &mut R) -> Array2<T>
 where
-    Standard: Distribution<T>,
+    StandardUniform: Distribution<T>,
 {
     let monge_primitives = [
         MongePrim::ConstantRows,
@@ -76,7 +76,7 @@ where
     ];
     let mut matrix = Array2::from_elem((m, n), T::zero());
     for _ in 0..(m + n) {
-        let monge = monge_primitives[rng.gen_range(0..monge_primitives.len())];
+        let monge = monge_primitives[rng.random_range(0..monge_primitives.len())];
         matrix = matrix + monge.to_matrix(m, n, rng);
     }
     matrix
