@@ -1,8 +1,8 @@
 #![cfg(feature = "ndarray")]
 
 use ndarray::{s, Array2};
+use rand::rngs::StdRng;
 use rand::SeedableRng;
-use rand_chacha::ChaCha20Rng;
 use smawk::{brute_force, online_column_minima, recursive};
 
 mod random_monge;
@@ -14,7 +14,7 @@ use random_monge::random_monge_matrix;
 #[test]
 fn column_minima_agree() {
     let sizes = vec![1, 2, 3, 4, 5, 10, 15, 20, 30];
-    let mut rng = ChaCha20Rng::seed_from_u64(0);
+    let mut rng = StdRng::seed_from_u64(0);
     for _ in 0..4 {
         for m in sizes.clone().iter() {
             for n in sizes.clone().iter() {
@@ -60,7 +60,7 @@ fn column_minima_agree() {
 #[test]
 fn online_agree() {
     let sizes = vec![1, 2, 3, 4, 5, 10, 15, 20, 30, 50];
-    let mut rng = ChaCha20Rng::seed_from_u64(0);
+    let mut rng = StdRng::seed_from_u64(0);
     for _ in 0..5 {
         for &size in &sizes {
             // Random totally monotone square matrix of the
