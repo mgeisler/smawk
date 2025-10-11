@@ -56,7 +56,7 @@ fn linear_regression(values: &[(usize, i32)]) -> LinRegression {
 }
 
 /// Check that the number of matrix accesses in `online_column_minima`
-/// grows as O(*n*) for *n* ✕ *n* matrix.
+/// grows as O(*n*) for *n* × *n* matrix.
 #[test]
 fn online_linear_complexity() {
     let mut rng = StdRng::seed_from_u64(0);

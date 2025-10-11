@@ -8,7 +8,7 @@
 //!
 //! # Examples
 //!
-//! Computing the column minima of an *m* ✕ *n* Monge matrix can be
+//! Computing the column minima of an *m* × *n* Monge matrix can be
 //! done efficiently with `smawk::column_minima`:
 //!
 //! ```
@@ -36,7 +36,7 @@
 //!
 //! ## Monotone Matrices
 //!
-//! We start with a helper definition. Given an *m* ✕ *n* matrix `M`,
+//! We start with a helper definition. Given an *m* × *n* matrix `M`,
 //! we say that `M` is *monotone* when the minimum value of row `i` is
 //! found to the left of the minimum value in row `i'` where `i < i'`.
 //!
@@ -163,7 +163,7 @@ impl<T: Copy> Matrix<T> for ndarray::Array2<T> {
 /// Algorithmica 2, pp. 195-208 (1987) and the code here is a
 /// translation [David Eppstein's Python code][pads].
 ///
-/// Running time on an *m* ✕ *n* matrix: O(*m* + *n*).
+/// Running time on an *m* × *n* matrix: O(*m* + *n*).
 ///
 /// # Examples
 ///
@@ -210,7 +210,7 @@ pub fn smawk_row_minima<T: PartialOrd + Copy, M: Matrix<T>>(matrix: &M) -> Vec<u
 /// Algorithmica 2, pp. 195-208 (1987) and the code here is a
 /// translation [David Eppstein's Python code][pads].
 ///
-/// Running time on an *m* ✕ *n* matrix: O(*m* + *n*).
+/// Running time on an *m* × *n* matrix: O(*m* + *n*).
 ///
 /// # Examples
 ///

@@ -18,7 +18,7 @@ use std::ops::Add;
 ///
 /// The inequality says that the sum of the main diagonal is less than
 /// the sum of the antidiagonal. Checking this condition is done by
-/// checking *n* ✕ *m* submatrices, so the running time is O(*mn*).
+/// checking *n* × *m* submatrices, so the running time is O(*mn*).
 ///
 /// [Monge matrix]: https://en.wikipedia.org/wiki/Monge_array
 pub fn is_monge<T: Ord + Copy, M: Matrix<T>>(matrix: &M) -> bool
