@@ -13,12 +13,12 @@ use random_monge::random_monge_matrix;
 /// Monge matrices.
 #[test]
 fn column_minima_agree() {
-    let sizes = vec![1, 2, 3, 4, 5, 10, 15, 20, 30];
+    let sizes = [1, 2, 3, 4, 5, 10, 15, 20, 30];
     let mut rng = StdRng::seed_from_u64(0);
     for _ in 0..4 {
-        for m in sizes.clone().iter() {
-            for n in sizes.clone().iter() {
-                let matrix: Array2<i32> = random_monge_matrix(*m, *n, &mut rng);
+        for &m in &sizes {
+            for &n in &sizes {
+                let matrix: Array2<i32> = random_monge_matrix(m, n, &mut rng);
 
                 // Compute and test row minima.
                 let brute_force = brute_force::row_minima(&matrix);
@@ -59,7 +59,7 @@ fn column_minima_agree() {
 /// Monge matrices.
 #[test]
 fn online_agree() {
-    let sizes = vec![1, 2, 3, 4, 5, 10, 15, 20, 30, 50];
+    let sizes = [1, 2, 3, 4, 5, 10, 15, 20, 30, 50];
     let mut rng = StdRng::seed_from_u64(0);
     for _ in 0..5 {
         for &size in &sizes {

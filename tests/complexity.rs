@@ -49,9 +49,9 @@ fn linear_regression(values: &[(usize, i32)]) -> LinRegression {
         / ((mean!(&xs * &xs) - squared!(xs_mean)) * (mean!(&ys * &ys) - squared!(ys_mean)));
 
     LinRegression {
-        alpha: alpha,
-        beta: beta,
-        r_squared: r_squared,
+        alpha,
+        beta,
+        r_squared,
     }
 }
 
@@ -73,6 +73,11 @@ fn online_linear_complexity() {
     }
 
     let lin_reg = linear_regression(&data);
+    println!(
+        "Linear regression:\n  α  = {:6.2}\n  β  = {:6.2}\n  r² = {:6.2}",
+        lin_reg.alpha, lin_reg.beta, lin_reg.r_squared
+    );
+
     assert!(
         lin_reg.r_squared > 0.95,
         "r² = {:.4} is lower than expected for a linear fit\nData points: {:?}\n{:?}",

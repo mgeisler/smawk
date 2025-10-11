@@ -22,7 +22,7 @@ pub enum MongePrim {
 
 impl MongePrim {
     /// Generate a Monge matrix from a primitive.
-    pub fn to_matrix<T: PrimInt, R: Rng>(&self, m: usize, n: usize, rng: &mut R) -> Array2<T>
+    pub fn to_matrix<T: PrimInt, R: Rng>(self, m: usize, n: usize, rng: &mut R) -> Array2<T>
     where
         StandardUniform: Distribution<T>,
     {
@@ -32,7 +32,7 @@ impl MongePrim {
             return matrix;
         }
 
-        match *self {
+        match self {
             MongePrim::ConstantRows => {
                 for mut row in matrix.rows_mut() {
                     if rng.random::<bool>() {
