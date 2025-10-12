@@ -1,70 +1,66 @@
 #![cfg(feature = "ndarray")]
-#![feature(test)]
 
-extern crate test;
-
+use divan::Bencher;
 use ndarray::Array2;
 use rand::rngs::StdRng;
 use rand::SeedableRng;
-use test::Bencher;
 
 #[path = "../tests/random_monge/mod.rs"]
 mod random_monge;
 use random_monge::random_monge_matrix;
 
-macro_rules! repeat {
-    ([ $( ($row_bench:ident, $column_bench:ident, $size:expr) $(,)* )* ],
-     $row_func:path, $column_func:path) => {
-        $(
-            #[bench]
-            fn $row_bench(b: &mut Bencher) {
-                let mut rng = StdRng::seed_from_u64(0);
-                let matrix: Array2<i32> = random_monge_matrix($size, $size, &mut rng);
-                b.iter(|| $row_func(&matrix));
-            }
-
-            #[bench]
-            fn $column_bench(b: &mut Bencher) {
-                let mut rng = StdRng::seed_from_u64(0);
-                let matrix: Array2<i32> = random_monge_matrix($size, $size, &mut rng).reversed_axes();
-                b.iter(|| $column_func(&matrix));
-            }
-        )*
-    };
+fn random_matrix(size: usize) -> Array2<i32> {
+    let mut rng = StdRng::seed_from_u64(0);
+    random_monge_matrix(size, size, &mut rng)
 }
 
-repeat!(
-    [
-        (row_brute_force_025, column_brute_force_025, 25),
-        (row_brute_force_050, column_brute_force_050, 50),
-        (row_brute_force_100, column_brute_force_100, 100),
-        (row_brute_force_200, column_brute_force_200, 200),
-        (row_brute_force_400, column_brute_force_400, 400)
-    ],
-    smawk::brute_force::row_minima,
-    smawk::brute_force::column_minima
-);
+const SIZES: [usize; 5] = [25, 50, 100, 200, 400];
 
-repeat!(
-    [
-        (row_recursive_025, column_recursive_025, 25),
-        (row_recursive_050, column_recursive_050, 50),
-        (row_recursive_100, column_recursive_100, 100),
-        (row_recursive_200, column_recursive_200, 200),
-        (row_recursive_400, column_recursive_400, 400)
-    ],
-    smawk::recursive::row_minima,
-    smawk::recursive::column_minima
-);
+// Brute Force
 
-repeat!(
-    [
-        (row_smawk_025, column_smawk_025, 25),
-        (row_smawk_050, column_smawk_050, 50),
-        (row_smawk_100, column_smawk_100, 100),
-        (row_smawk_200, column_smawk_200, 200),
-        (row_smawk_400, column_smawk_400, 400)
-    ],
-    smawk::row_minima,
-    smawk::column_minima
-);
+#[divan::bench(name = "brute_force_row_minima", consts = SIZES)]
+fn brute_force_row_minima<const N: usize>(bencher: Bencher) {
+    let matrix = random_matrix(N);
+    bencher.bench_local(|| smawk::brute_force::row_minima(&matrix));
+}
+
+#[divan::bench(name = "brute_force_column_minima", consts = SIZES)]
+fn brute_force_column_minima<const N: usize>(bencher: Bencher) {
+    let matrix = random_matrix(N);
+    let transposed = matrix.reversed_axes();
+    bencher.bench_local(|| smawk::brute_force::column_minima(&transposed));
+}
+
+// Recursive
+
+#[divan::bench(name = "recursive_row_minima", consts = SIZES)]
+fn recursive_row_minima<const N: usize>(bencher: Bencher) {
+    let matrix = random_matrix(N);
+    bencher.bench_local(|| smawk::recursive::row_minima(&matrix));
+}
+
+#[divan::bench(name = "recursive_column_minima", consts = SIZES)]
+fn recursive_column_minima<const N: usize>(bencher: Bencher) {
+    let matrix = random_matrix(N);
+    let transposed = matrix.reversed_axes();
+    bencher.bench_local(|| smawk::recursive::column_minima(&transposed));
+}
+
+// SMAWK
+
+#[divan::bench(name = "smawk_row_minima", consts = SIZES)]
+fn smawk_row_minima<const N: usize>(bencher: Bencher) {
+    let matrix = random_matrix(N);
+    bencher.bench_local(|| smawk::row_minima(&matrix));
+}
+
+#[divan::bench(name = "smawk_column_minima", consts = SIZES)]
+fn smawk_column_minima<const N: usize>(bencher: Bencher) {
+    let matrix = random_matrix(N);
+    let transposed = matrix.reversed_axes();
+    bencher.bench_local(|| smawk::column_minima(&transposed));
+}
+
+fn main() {
+    divan::main();
+}
