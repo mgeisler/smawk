@@ -2,7 +2,8 @@
 
 use ndarray::{arr2, Array, Array2};
 use rand::rngs::StdRng;
-use rand::SeedableRng;
+use rand::{Rng, SeedableRng};
+use rstest::rstest;
 use smawk::monge::is_monge;
 
 mod random_monge;
@@ -80,4 +81,18 @@ fn monge_lower_left_ones() {
             [1, 1, 1, 0],
         ])
     );
+}
+
+#[rstest]
+fn many_random_monge_matrix_is_monge(
+    // Generate 100 different seeds.
+    #[values(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)] seed_a: u64,
+    #[values(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)] seed_b: u64,
+) {
+    let seed = seed_a * 10 + seed_b;
+    let mut rng = StdRng::seed_from_u64(seed);
+    let m = rng.random_range(1..50);
+    let n = rng.random_range(1..50);
+    let matrix: Array2<i32> = random_monge_matrix(m, n, &mut rng);
+    assert!(is_monge(&matrix), "m={m}, n={n}");
 }
