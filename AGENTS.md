@@ -87,6 +87,12 @@ The `smawk` project adheres to modern Rust development practices.
 - **Clippy**: The project uses `clippy` for linting and enforcing idiomatic
   Rust.
 
+### Code Safety
+
+- **No Panics**: Avoid introducing code that can panic, such as using
+  `.unwrap()` on `Option` or `Result` types. The goal is to write very safe code
+  with no runtime crashes.
+
 ### Testing
 
 - **Unit Tests**: Each module contains a `tests` submodule with unit tests for
