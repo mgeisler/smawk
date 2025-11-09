@@ -33,6 +33,9 @@ jobs:
       - name: Build with default features
         run: cargo build
 
+      - name: Run tests with default features
+        run: cargo test
+
       - name: Build with all features
         run: cargo build --all-features
 
