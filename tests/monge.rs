@@ -1,4 +1,4 @@
-#![cfg(feature = "ndarray")]
+#![cfg(all(feature = "num-traits", feature = "ndarray"))]
 
 use ndarray::{arr2, Array, Array2};
 use rand::rngs::StdRng;

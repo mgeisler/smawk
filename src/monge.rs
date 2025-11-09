@@ -2,10 +2,13 @@
 //!
 //! The functions here are mostly meant to be used for testing
 //! correctness of the SMAWK implementation.
+//!
+//! **Note: this module is only available if you enable the
+//! `num-traits` Cargo feature.**
 
 use crate::Matrix;
-use std::num::Wrapping;
-use std::ops::Add;
+use num_traits::ops::overflowing::OverflowingAdd;
+use num_traits::PrimInt;
 
 /// Verify that a matrix is a Monge matrix.
 ///
@@ -21,40 +24,22 @@ use std::ops::Add;
 /// checking *n* × *m* submatrices, so the running time is O(*mn*).
 ///
 /// [Monge matrix]: https://en.wikipedia.org/wiki/Monge_array
-pub fn is_monge<T: Ord + Copy, M: Matrix<T>>(matrix: &M) -> bool
-where
-    Wrapping<T>: Add<Output = Wrapping<T>>,
-{
-    /// Returns `Ok(a + b)` if the computation can be done without
-    /// overflow, otherwise `Err(a + b - T::MAX - 1)` is returned.
-    fn checked_add<T: Ord + Copy>(a: Wrapping<T>, b: Wrapping<T>) -> Result<T, T>
-    where
-        Wrapping<T>: Add<Output = Wrapping<T>>,
-    {
-        let sum = a + b;
-        if sum < a {
-            Err(sum.0)
-        } else {
-            Ok(sum.0)
-        }
-    }
-
+pub fn is_monge<T: PrimInt + OverflowingAdd, M: Matrix<T>>(matrix: &M) -> bool {
     (0..matrix.nrows() - 1)
         .flat_map(|row| (0..matrix.ncols() - 1).map(move |col| (row, col)))
         .all(|(row, col)| {
-            let top_left = Wrapping(matrix.index(row, col));
-            let top_right = Wrapping(matrix.index(row, col + 1));
-            let bot_left = Wrapping(matrix.index(row + 1, col));
-            let bot_right = Wrapping(matrix.index(row + 1, col + 1));
+            let top_left = matrix.index(row, col);
+            let top_right = matrix.index(row, col + 1);
+            let bot_left = matrix.index(row + 1, col);
+            let bot_right = matrix.index(row + 1, col + 1);
 
-            match (
-                checked_add(top_left, bot_right),
-                checked_add(bot_left, top_right),
-            ) {
-                (Ok(a), Ok(b)) => a <= b,   // No overflow.
-                (Err(a), Err(b)) => a <= b, // Double overflow.
-                (Ok(_), Err(_)) => true,    // Anti-diagonal overflow.
-                (Err(_), Ok(_)) => false,   // Main diagonal overflow.
+            let (main_sum, main_overflow) = top_left.overflowing_add(&bot_right);
+            let (anti_sum, anti_overflow) = top_right.overflowing_add(&bot_left);
+            match (main_overflow, anti_overflow) {
+                (false, false) => main_sum <= anti_sum, // No overflow.
+                (true, true) => main_sum <= anti_sum,   // Double overflow.
+                (false, true) => true,                  // Anti-diagonal overflow.
+                (true, false) => false,                 // Main diagonal overflow.
             }
         })
 }

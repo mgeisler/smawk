@@ -12,9 +12,9 @@ repository = "https://github.com/mgeisler/smawk"
 description = "Functions for finding row-minima in a totally monotone matrix."
 
 [dependencies]
+num-traits = { version = "0.2.14", optional = true }
 ndarray = { version = "0.17.1", optional = true }
 
 [dev-dependencies]
-num-traits = "0.2.14"
 rand = "0.9.2"
 version-sync = "0.9.4"
