@@ -69,12 +69,15 @@ algorithms.
 
 ### Running Benchmarks
 
-The crate includes benchmarks to compare the performance of different
-algorithms. To run them:
+The crate uses [Divan](https://github.com/nvzqz/divan) for benchmarking. To run
+the benchmarks, use:
 
 ```bash
-cargo bench
+cargo bench --features ndarray
 ```
+
+This will run all benchmarks in the `benches` directory. Note that the
+benchmarks need the `ndarray` feature.
 
 ## Development Conventions
 
