@@ -29,6 +29,10 @@ use ndarray::{s, Array2, ArrayView2, Axis};
 ///
 /// It is an error to call this on a matrix with zero columns.
 pub fn row_minima<T: Ord>(matrix: &Array2<T>) -> Vec<usize> {
+    if matrix.nrows() == 0 {
+        return vec![];
+    }
+    assert!(matrix.ncols() > 0, "matrix has zero columns");
     let mut minima = vec![0; matrix.nrows()];
     recursive_inner(matrix.view(), &|| Direction::Row, 0, &mut minima);
     minima
@@ -55,6 +59,10 @@ pub fn row_minima<T: Ord>(matrix: &Array2<T>) -> Vec<usize> {
 ///
 /// It is an error to call this on a matrix with zero rows.
 pub fn column_minima<T: Ord>(matrix: &Array2<T>) -> Vec<usize> {
+    if matrix.ncols() == 0 {
+        return vec![];
+    }
+    assert!(matrix.nrows() > 0, "matrix has zero rows");
     let mut minima = vec![0; matrix.ncols()];
     recursive_inner(matrix.view(), &|| Direction::Column, 0, &mut minima);
     minima

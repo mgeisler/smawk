@@ -102,3 +102,96 @@ fn online_agree() {
         }
     }
 }
+
+/// Check that the algorithms agree on extremely unbalanced
+/// rectangular matrices.
+#[test]
+fn unbalanced_matrices_agree() {
+    let mut rng = StdRng::seed_from_u64(42);
+    let cases = [(1, 100), (100, 1), (2, 50), (50, 2), (5, 80), (80, 5)];
+    for &(m, n) in &cases {
+        let matrix: Array2<i32> = random_monge_matrix(m, n, &mut rng);
+
+        // Compute and test row minima.
+        let brute_force = brute_force::row_minima(&matrix);
+        let recursive = recursive::row_minima(&matrix);
+        let smawk = smawk::row_minima(&matrix);
+        assert_eq!(brute_force, recursive);
+        assert_eq!(brute_force, smawk);
+
+        // Do the same for the column minima.
+        let brute_force = brute_force::column_minima(&matrix);
+        let recursive = recursive::column_minima(&matrix);
+        let smawk = smawk::column_minima(&matrix);
+        assert_eq!(brute_force, recursive);
+        assert_eq!(brute_force, smawk);
+    }
+}
+
+/// Check that all three algorithms agree on handling empty 0x0
+/// matrices correctly.
+#[test]
+fn empty_matrices_agree() {
+    let matrix: Array2<i32> = Array2::from_elem((0, 0), 0);
+    let brute_force_row = brute_force::row_minima(&matrix);
+    let recursive_row = recursive::row_minima(&matrix);
+    let smawk_row = smawk::row_minima(&matrix);
+    assert_eq!(brute_force_row, recursive_row);
+    assert_eq!(brute_force_row, smawk_row);
+    assert_eq!(brute_force_row, vec![]);
+
+    let brute_force_col = brute_force::column_minima(&matrix);
+    let recursive_col = recursive::column_minima(&matrix);
+    let smawk_col = smawk::column_minima(&matrix);
+    assert_eq!(brute_force_col, recursive_col);
+    assert_eq!(brute_force_col, smawk_col);
+    assert_eq!(brute_force_col, vec![]);
+}
+
+/// Check that smawk::row_minima panics when ncols is 0.
+#[test]
+#[should_panic]
+fn smawk_row_minima_empty_cols_panics() {
+    let matrix: Array2<i32> = Array2::from_elem((5, 0), 0);
+    smawk::row_minima(&matrix);
+}
+
+/// Check that brute_force::row_minima panics when ncols is 0.
+#[test]
+#[should_panic]
+fn brute_force_row_minima_empty_cols_panics() {
+    let matrix: Array2<i32> = Array2::from_elem((5, 0), 0);
+    brute_force::row_minima(&matrix);
+}
+
+/// Check that recursive::row_minima panics when ncols is 0.
+#[test]
+#[should_panic]
+fn recursive_row_minima_empty_cols_panics() {
+    let matrix: Array2<i32> = Array2::from_elem((5, 0), 0);
+    recursive::row_minima(&matrix);
+}
+
+/// Check that smawk::column_minima panics when nrows is 0.
+#[test]
+#[should_panic]
+fn smawk_column_minima_empty_rows_panics() {
+    let matrix: Array2<i32> = Array2::from_elem((0, 5), 0);
+    smawk::column_minima(&matrix);
+}
+
+/// Check that brute_force::column_minima panics when nrows is 0.
+#[test]
+#[should_panic]
+fn brute_force_column_minima_empty_rows_panics() {
+    let matrix: Array2<i32> = Array2::from_elem((0, 5), 0);
+    brute_force::column_minima(&matrix);
+}
+
+/// Check that recursive::column_minima panics when nrows is 0.
+#[test]
+#[should_panic]
+fn recursive_column_minima_empty_rows_panics() {
+    let matrix: Array2<i32> = Array2::from_elem((0, 5), 0);
+    recursive::column_minima(&matrix);
+}
