@@ -86,10 +86,15 @@
 //! unknown inputs, it can use [`monge::is_monge`] to verify that a
 //! matrix is a Monge matrix.
 
+#![no_std]
 #![doc(html_root_url = "https://docs.rs/smawk/0.3.2")]
 // The s! macro from ndarray uses unsafe internally, so we can only
 // forbid unsafe code when building with the default features.
 #![cfg_attr(not(feature = "ndarray"), forbid(unsafe_code))]
+
+extern crate alloc;
+use alloc::vec;
+use alloc::vec::Vec;
 
 #[cfg(feature = "ndarray")]
 pub mod brute_force;
@@ -365,7 +370,7 @@ pub fn online_column_minima<T: Copy + PartialOrd, M: Fn(&[(usize, T)], usize, us
         let i = finished + 1;
         if i > tentative {
             let rows = (base..finished + 1).collect::<Vec<_>>();
-            tentative = std::cmp::min(finished + rows.len(), size - 1);
+            tentative = core::cmp::min(finished + rows.len(), size - 1);
             let cols = (finished + 1..tentative + 1).collect::<Vec<_>>();
             let mut minima = vec![0; tentative + 1];
             smawk_inner(&|i, j| m![i, j], &rows, &cols, &mut minima);

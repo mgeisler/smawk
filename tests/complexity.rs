@@ -64,7 +64,7 @@ fn online_linear_complexity() {
 
     for &size in &[1, 2, 3, 4, 5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100] {
         let matrix: Array2<i32> = random_monge_matrix(size, size, &mut rng);
-        let count = std::cell::RefCell::new(0);
+        let count = core::cell::RefCell::new(0);
         online_column_minima(0, size, |_, i, j| {
             *count.borrow_mut() += 1;
             matrix[[i, j]]
