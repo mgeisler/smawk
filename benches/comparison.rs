@@ -1,9 +1,12 @@
 #![cfg(feature = "ndarray")]
 
-use divan::Bencher;
+use divan::{AllocProfiler, Bencher};
 use ndarray::Array2;
 use rand::rngs::StdRng;
 use rand::SeedableRng;
+
+#[global_allocator]
+static ALLOC: AllocProfiler = AllocProfiler::system();
 
 #[path = "../tests/random_monge/mod.rs"]
 mod random_monge;
