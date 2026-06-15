@@ -53,6 +53,11 @@ This crate has an optional dependency on the
 [`ndarray` crate](https://docs.rs/ndarray/), which provides an efficient matrix
 implementation. Enable the `ndarray` Cargo feature to use it.
 
+### `no_std` Support
+
+SMAWK is a `no_std` crate by default. It requires the `alloc` crate for dynamic
+memory allocation.
+
 ## Documentation
 
 **[API documentation][api-docs]**

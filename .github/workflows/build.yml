@@ -47,6 +47,29 @@ jobs:
       - name: Run tests with all features
         run: cargo test --all-features
 
+  no_std:
+    name: Build and Test (no_std)
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Install no_std target
+        run: rustup target add thumbv7m-none-eabi
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          # Avoid PRs filling up the cache.
+          save-if: ${{ github.ref == 'refs/heads/master' }}
+
+      - name: Check no_std compatibility (default features)
+        run: cargo check --target thumbv7m-none-eabi --no-default-features
+
+      - name: Check no_std compatibility (all features)
+        run: cargo check --target thumbv7m-none-eabi --all-features
+
   format:
     name: Code Formatting
     runs-on: ubuntu-latest
