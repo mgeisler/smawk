@@ -271,8 +271,8 @@ pub fn smawk_column_minima<T: PartialOrd + Copy, M: Matrix<T>>(matrix: &M) -> Ve
 /// This mathematical guarantee ensures that the scratchpads never need to reallocate/grow.
 #[inline(always)]
 fn scratchpads_empty(nrows: usize, ncols: usize) -> (Vec<usize>, Vec<usize>) {
-    let rows_scratch = Vec::with_capacity(nrows + 2 * ncols);
-    let cols_scratch = Vec::with_capacity(ncols * 2);
+    let rows_scratch = vec![0; nrows + 2 * ncols];
+    let cols_scratch = vec![0; ncols * 2];
     (rows_scratch, cols_scratch)
 }
 
@@ -281,8 +281,12 @@ fn scratchpads_empty(nrows: usize, ncols: usize) -> (Vec<usize>, Vec<usize>) {
 #[inline(always)]
 fn scratchpads(nrows: usize, ncols: usize) -> (Vec<usize>, Vec<usize>) {
     let (mut rows_scratch, mut cols_scratch) = scratchpads_empty(nrows, ncols);
-    rows_scratch.extend(0..nrows);
-    cols_scratch.extend(0..ncols);
+    for (i, val) in rows_scratch.iter_mut().enumerate().take(nrows) {
+        *val = i;
+    }
+    for (i, val) in cols_scratch.iter_mut().enumerate().take(ncols) {
+        *val = i;
+    }
     (rows_scratch, cols_scratch)
 }
 
@@ -290,8 +294,8 @@ fn scratchpads(nrows: usize, ncols: usize) -> (Vec<usize>, Vec<usize>) {
 /// `minima` slice is updated inplace.
 fn smawk_inner<T: PartialOrd + Copy, M: Fn(usize, usize) -> T>(
     matrix: &M,
-    (rows_scratch, rows_start, rows_end): (&mut Vec<usize>, usize, usize),
-    (cols_scratch, cols_start, cols_end): (&mut Vec<usize>, usize, usize),
+    (rows_scratch, rows_start, rows_end): (&mut [usize], usize, usize),
+    (cols_scratch, cols_start, cols_end): (&mut [usize], usize, usize),
     minima: &mut [usize],
 ) {
     if cols_start == cols_end {
@@ -299,9 +303,21 @@ fn smawk_inner<T: PartialOrd + Copy, M: Fn(usize, usize) -> T>(
     }
 
     let cols_len = cols_end - cols_start;
-    let stack_start = rows_scratch.len();
-    let mut stack_len = 0;
+    let stack_start = rows_end;
+    let odd_cols_start = cols_end;
+    let odd_cols_len = cols_len / 2;
 
+    // Upfront assertions using the maximum index trick. Asserting the
+    // maximum index accessed in each loop/vector beforehand allows
+    // LLVM to prove that all smaller indices accessed in the loop are
+    // in bounds, eliminating individual bounds checking inside the
+    // loops.
+    assert!(rows_end <= rows_scratch.len());
+    assert!(stack_start + cols_len <= rows_scratch.len());
+    assert!(cols_start + 2 * odd_cols_len <= cols_scratch.len());
+    assert!(odd_cols_start + odd_cols_len <= cols_scratch.len());
+
+    let mut stack_len = 0;
     for i in rows_start..rows_end {
         let r = rows_scratch[i];
         while stack_len > 0 {
@@ -313,33 +329,31 @@ fn smawk_inner<T: PartialOrd + Copy, M: Fn(usize, usize) -> T>(
                 break;
             }
         }
-        if stack_len != cols_len {
-            if stack_start + stack_len < rows_scratch.len() {
-                rows_scratch[stack_start + stack_len] = r;
-            } else {
-                rows_scratch.push(r);
-            }
+        if stack_len < cols_len {
+            rows_scratch[stack_start + stack_len] = r;
             stack_len += 1;
         }
     }
 
-    let odd_cols_start = cols_scratch.len();
-    for idx in 1..cols_len {
-        if idx % 2 == 1 {
-            let col = cols_scratch[cols_start + idx];
-            cols_scratch.push(col);
-        }
+    for idx in 0..odd_cols_len {
+        let col = cols_scratch[cols_start + 2 * idx + 1];
+        cols_scratch[odd_cols_start + idx] = col;
     }
-    let odd_cols_end = cols_scratch.len();
 
     smawk_inner(
         matrix,
         (&mut *rows_scratch, stack_start, stack_start + stack_len),
-        (&mut *cols_scratch, odd_cols_start, odd_cols_end),
+        (
+            &mut *cols_scratch,
+            odd_cols_start,
+            odd_cols_start + odd_cols_len,
+        ),
         minima,
     );
 
     let mut r = 0;
+    // Assert the final stack boundary before the loop.
+    assert!(stack_start + stack_len <= rows_scratch.len());
     for c in 0..cols_len {
         if c % 2 == 0 {
             let col = cols_scratch[cols_start + c];
@@ -350,7 +364,7 @@ fn smawk_inner<T: PartialOrd + Copy, M: Fn(usize, usize) -> T>(
                 minima[cols_scratch[cols_start + c + 1]]
             };
             let mut pair = (matrix(row, col), row);
-            while row != last_row {
+            while row != last_row && r < stack_len - 1 {
                 r += 1;
                 row = rows_scratch[stack_start + r];
                 if (matrix(row, col), row) < pair {
@@ -360,9 +374,6 @@ fn smawk_inner<T: PartialOrd + Copy, M: Fn(usize, usize) -> T>(
             minima[col] = pair.1;
         }
     }
-
-    rows_scratch.truncate(stack_start);
-    cols_scratch.truncate(odd_cols_start);
 }
 
 /// Compute upper-right column minima in O(*m* + *n*) time.
@@ -421,7 +432,7 @@ pub fn online_column_minima<T: Copy + PartialOrd, M: Fn(&[(usize, T)], usize, us
     }
 
     let (mut rows_scratch, mut cols_scratch) = scratchpads_empty(size, size);
-    let mut minima = Vec::with_capacity(size);
+    let mut minima = vec![0; size];
 
     // Keep going until we have finished all size columns. Since the
     // columns are zero-indexed, we're done when finished == size - 1.
@@ -432,18 +443,19 @@ pub fn online_column_minima<T: Copy + PartialOrd, M: Fn(&[(usize, T)], usize, us
         // the base.
         let i = finished + 1;
         if i > tentative {
-            let rows_start = rows_scratch.len();
-            rows_scratch.extend(base..finished + 1);
-            let rows_end = rows_scratch.len();
+            let rows_start = 0;
+            let rows_end = finished + 1 - base;
+            for (idx, r) in (base..finished + 1).enumerate() {
+                rows_scratch[idx] = r;
+            }
 
-            tentative = core::cmp::min(finished + (rows_end - rows_start), size - 1);
+            tentative = core::cmp::min(finished + rows_end, size - 1);
 
-            let cols_start = cols_scratch.len();
-            cols_scratch.extend(finished + 1..tentative + 1);
-            let cols_end = cols_scratch.len();
-
-            minima.clear();
-            minima.resize(tentative + 1, 0);
+            let cols_start = 0;
+            let cols_end = tentative - finished;
+            for (idx, c) in (finished + 1..tentative + 1).enumerate() {
+                cols_scratch[idx] = c;
+            }
 
             smawk_inner(
                 &|i, j| m![i, j],
@@ -461,9 +473,6 @@ pub fn online_column_minima<T: Copy + PartialOrd, M: Fn(&[(usize, T)], usize, us
                     result[col] = (row, v);
                 }
             }
-
-            rows_scratch.truncate(rows_start);
-            cols_scratch.truncate(cols_start);
 
             finished = i;
             continue;
