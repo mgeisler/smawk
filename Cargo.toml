@@ -25,3 +25,8 @@ version-sync = "0.9.4"
 name = "comparison"
 harness = false
 required-features = ["ndarray"]
+
+[[bench]]
+name = "online"
+harness = false
+required-features = ["ndarray"]
