@@ -14,7 +14,7 @@ fn random_matrix(size: usize) -> Array2<i32> {
     random_monge_matrix(size, size, &mut rng)
 }
 
-const SIZES: [usize; 5] = [25, 50, 100, 200, 400];
+const SIZES: [usize; 5] = [50, 100, 200, 400, 800];
 
 // Brute Force
 
