@@ -415,18 +415,9 @@ pub fn online_column_minima<T: Copy + PartialOrd, M: Fn(&[(usize, T)], usize, us
     let mut base = 0;
     let mut tentative = 0;
 
-    // Shorthand for evaluating the matrix. We need a macro here since
-    // we don't want to borrow the result vector.
+    // Shorthand for evaluating the matrix.
     macro_rules! m {
         ($i:expr, $j:expr) => {{
-            assert!($i < $j, "(i, j) not above diagonal: ({}, {})", $i, $j);
-            assert!(
-                $i < size && $j < size,
-                "(i, j) out of bounds: ({}, {}), size: {}",
-                $i,
-                $j,
-                size
-            );
             matrix(&result[..finished + 1], $i, $j)
         }};
     }
