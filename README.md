@@ -68,6 +68,19 @@ memory allocation.
 
 ## Changelog
 
+### Version 0.3.3 (2026-06-16)
+
+This release contains optimizations that make our benchmarks about 28% faster by
+eliminating heap allocations and vector bounds checks.
+
+- [#89](https://github.com/mgeisler/smawk/pull/89): Add support for `no_std`.
+- [#90](https://github.com/mgeisler/smawk/pull/90): Add GitHub Sponsors
+  configuration.
+- [#114](https://github.com/mgeisler/smawk/pull/114): Remove heap allocations by
+  pre-allocating vectors up front. This improves benchmarks by 10%.
+- [#115](https://github.com/mgeisler/smawk/pull/115): Eliminate bounds checks in
+  `smawk_inner`. This improves benchmarks by another 20%.
+
 ### Version 0.3.2 (2023-09-17)
 
 This release adds more documentation and renames the top-level SMAWK functions.
