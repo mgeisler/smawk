@@ -170,6 +170,28 @@ dimensions or the length of the `minima` slice. Tracking value-range invariants
 of dynamically populated arrays is beyond LLVM's static analysis, making these
 remaining bounds checks inevitable in safe Rust.
 
+#### Potential Avenues to Close the Gap
+
+To safely eliminate the remaining data-dependent bounds checks without resorting
+to unsafe code, future revisions could investigate:
+
+- **Dynamic Re-slicing (Sub-slicing)**: Instead of tracking a mutable integer
+  `stack_len` to index the scratchpads, represent the active stack and columns
+  as subslices (e.g.,
+  `active_stack = &mut rows_scratch[stack_start..stack_start + stack_len]`). By
+  shrinking these subslices during a pop (e.g.,
+  `active_stack = &mut active_stack[..len - 1]`), we can access the stack top
+  via `active_stack[len - 1]`. Because `len - 1` is always less than the slice's
+  own length `len` (when non-empty), LLVM can statically prove bounds safety on
+  every iteration without needing to track the data-dependent loop invariants.
+- **Consolidating the Scratchpads**: Storing row and column index pairs together
+  rather than in separate `rows_scratch` and `cols_scratch` arrays. This would
+  halve the number of bounds check branches by retrieving both values in a
+  single index lookup.
+- **Safe Cursor Abstraction**: Wrapping the scratchpad access in a simple, local
+  cursor struct that uses raw pointers internally but exposes a safe interface
+  to `smawk_inner`, isolating the unsafe code to a tiny, verified boundary.
+
 ## Verifying Assembly and Bounds Check Elimination
 
 When optimizing core hot loops, you must verify that LLVM successfully optimizes
