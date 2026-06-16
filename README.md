@@ -47,6 +47,10 @@ The `minima` vector gives the index of the minimum value per column, so
 `minima[0] == 1` since the minimum value in the first column is 2 (row 1). Note
 that the smallest row index is returned.
 
+For dynamic programming problems where matrix elements depend on previously
+computed values (online dynamic programming), you can use the online column
+minima algorithm via `smawk::online_column_minima`.
+
 ### Cargo Features
 
 This crate has an optional dependency on the

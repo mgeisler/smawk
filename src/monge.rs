@@ -18,7 +18,9 @@ use core::ops::Add;
 ///
 /// The inequality says that the sum of the main diagonal is less than
 /// the sum of the antidiagonal. Checking this condition is done by
-/// checking *n* × *m* submatrices, so the running time is O(*mn*).
+/// verifying all adjacent 2 × 2 submatrices, so the running time is
+/// O(*mn*) where *m* is the number of rows and *n* is the number of
+/// columns.
 ///
 /// [Monge matrix]: https://en.wikipedia.org/wiki/Monge_array
 pub fn is_monge<T: Ord + Copy, M: Matrix<T>>(matrix: &M) -> bool
