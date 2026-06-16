@@ -68,6 +68,39 @@ memory allocation.
 
 ## Changelog
 
+### Version 0.3.3 (2026-06-16)
+
+* [#81](https://github.com/mgeisler/smawk/pull/81): Fix emphasis in README
+* [#82](https://github.com/mgeisler/smawk/pull/82): Enable Dependabot
+* [#87](https://github.com/mgeisler/smawk/pull/87): cargo: update ndarray requirement from 0.15.4 to 0.16.1 in the minor-updates group across 1 directory
+* [#88](https://github.com/mgeisler/smawk/pull/88): Fix typo.
+* [#89](https://github.com/mgeisler/smawk/pull/89): Add support for `no_std`
+* [#90](https://github.com/mgeisler/smawk/pull/90): Add GitHub Sponsors configuration
+* [#91](https://github.com/mgeisler/smawk/pull/91): Generate code coverage with `cargo-llvm-cov`
+* [#92](https://github.com/mgeisler/smawk/pull/92): Add names to all GH Action jobs
+* [#94](https://github.com/mgeisler/smawk/pull/94): Bump thomaseizinger/set-crate-version from 1.0.0 to 1.0.1
+* [#95](https://github.com/mgeisler/smawk/pull/95): Bump actions/checkout from 4 to 5
+* [#96](https://github.com/mgeisler/smawk/pull/96): Bump dprint/check from 2.2 to 2.3
+* [#98](https://github.com/mgeisler/smawk/pull/98): Upgrade to rand 0.9
+* [#99](https://github.com/mgeisler/smawk/pull/99): Cache Rust artifacts on the `master` branch
+* [#100](https://github.com/mgeisler/smawk/pull/100): Simplify and clean up unit tests
+* [#101](https://github.com/mgeisler/smawk/pull/101): Use correct U+00D7 × Multiplication Sign
+* [#102](https://github.com/mgeisler/smawk/pull/102): cargo: bump ndarray from 0.16.1 to 0.17.1
+* [#103](https://github.com/mgeisler/smawk/pull/103): Run tests with default features
+* [#104](https://github.com/mgeisler/smawk/pull/104): Instruct Gemini and others to avoid `unwrap`.
+* [#106](https://github.com/mgeisler/smawk/pull/106): Generate many more test cases for `random_monge_matrix`
+* [#107](https://github.com/mgeisler/smawk/pull/107): Bump actions/checkout from 5 to 6
+* [#108](https://github.com/mgeisler/smawk/pull/108): cargo: bump ndarray from 0.17.1 to 0.17.2 in the patch-updates group across 1 directory
+* [#109](https://github.com/mgeisler/smawk/pull/109): Add tests for corner cases like empty matrics
+* [#110](https://github.com/mgeisler/smawk/pull/110): Switch to Divan for benchmarking
+* [#111](https://github.com/mgeisler/smawk/pull/111): Add new `online` benchmark
+* [#112](https://github.com/mgeisler/smawk/pull/112): Enable heap allocation benchmarking
+* [#113](https://github.com/mgeisler/smawk/pull/113): Test `no_std` support in CI and mention in README
+* [#114](https://github.com/mgeisler/smawk/pull/114): Remove heap allocations by pre-allocating vectors up front
+* [#115](https://github.com/mgeisler/smawk/pull/115): Eliminate bounds checks in `smawk_inner`
+* [#116](https://github.com/mgeisler/smawk/pull/116): Remove unnecessary assertions in `m!` macro
+* [#117](https://github.com/mgeisler/smawk/pull/117): Bump actions/github-script from 3 to 9
+
 ### Version 0.3.2 (2023-09-17)
 
 This release adds more documentation and renames the top-level SMAWK functions.
