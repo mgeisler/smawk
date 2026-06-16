@@ -2,7 +2,7 @@
 
 use ndarray::{arr2, Array, Array2};
 use rand::rngs::StdRng;
-use rand::{Rng, SeedableRng};
+use rand::{RngExt, SeedableRng};
 use rstest::rstest;
 use smawk::monge::is_monge;
 
