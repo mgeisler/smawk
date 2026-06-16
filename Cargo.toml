@@ -1,6 +1,6 @@
 [package]
 name = "smawk"
-version = "0.3.2"
+version = "0.3.3"
 authors = ["Martin Geisler <martin@geisler.net>"]
 categories = ["algorithms", "mathematics", "science"]
 edition = "2021"
