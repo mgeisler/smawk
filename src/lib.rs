@@ -85,6 +85,50 @@
 //! with the functions in this crate. If your program is dealing with
 //! unknown inputs, it can use [`monge::is_monge`] to verify that a
 //! matrix is a Monge matrix.
+//!
+//! ## Online Column Minima and Dynamic Programming
+//!
+//! In the standard offline SMAWK algorithm, the entire matrix must be
+//! known and queryable upfront. However, many dynamic programming
+//! problems (like the *Least Weight Subsequence* problem) involve
+//! finding a sequence of indices to minimize a transition cost of the
+//! form:
+//!
+//! ```text
+//! v(0) = initial
+//! v(j) = min { v(i) + w(i, j) | 0 <= i < j }  for j > 0
+//! ```
+//!
+//! If the transition weight function `w(i, j)` satisfies the Monge
+//! property, the matrix `M[i, j] = v(i) + w(i, j)` is totally
+//! monotone. However, the matrix entries in column `j` cannot be
+//! computed until the optimal prefix values `v(i)` for all `i < j`
+//! are finalized. This is an *online* dependency constraint.
+//!
+//! The [`online_column_minima`] function solves this online dynamic
+//! programming problem in O(*n*) time. It wraps the core SMAWK
+//! algorithm inside an online check-and-correct harness (based on the
+//! Galil-Park algorithm), executing matrix queries dynamically as the
+//! input prefix calculations are completed.
+//!
+//! A prime practical application of this is the Knuth-Plass paragraph
+//! line-breaking algorithm (used in TeX and crates like `textwrap`).
+//! By framing word wrapping as a concave least weight subsequence
+//! problem, the optimal line breaks of a paragraph of *n* words can
+//! be found in O(*n*) time instead of O(*n*²).
+//!
+//! # References
+//!
+//! - Alok Aggarwal, Maria M. Klawe, Shlomo Moran, Peter Shor, and Robert Wilber.
+//!   **Geometric applications of a matrix searching algorithm**.
+//!   *Algorithmica*, 2(1):195–208, 1987.
+//! - Robert Wilber. **The concave least-weight subsequence problem
+//!   revisited**. *Journal of Algorithms*, 9(3):418–425, 1988.
+//! - Zvi Galil and Kunsoo Park. **A linear-time algorithm for concave
+//!   one-dimensional dynamic programming**. *Information Processing Letters*,
+//!   33(6):309–313, 1990.
+//! - Donald E. Knuth and Michael F. Plass. **Breaking paragraphs into lines**.
+//!   *Software: Practice and Experience*, 11(11):1119–1184, 1981.
 
 #![no_std]
 #![doc(html_root_url = "https://docs.rs/smawk/0.3.2")]
