@@ -8,7 +8,7 @@
 use ndarray::{s, Array2};
 use num_traits::PrimInt;
 use rand::distr::{Distribution, StandardUniform};
-use rand::Rng;
+use rand::{Rng, RngExt};
 
 /// A Monge matrix can be decomposed into one of these primitive
 /// building blocks.

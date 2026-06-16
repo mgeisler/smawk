@@ -17,7 +17,7 @@ ndarray = { version = "0.17.1", optional = true, default-features = false }
 [dev-dependencies]
 divan = "0.1.21"
 num-traits = "0.2.14"
-rand = "0.9.2"
+rand = "0.10.1"
 rstest = "0.26.1"
 version-sync = "0.9.4"
 
