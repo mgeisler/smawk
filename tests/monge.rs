@@ -1,13 +1,13 @@
 #![cfg(feature = "ndarray")]
 
-use ndarray::{arr2, Array, Array2};
+use ndarray::{Array, Array2, arr2};
 use rand::rngs::StdRng;
 use rand::{RngExt, SeedableRng};
 use rstest::rstest;
 use smawk::monge::is_monge;
 
 mod random_monge;
-use random_monge::{random_monge_matrix, MongePrim};
+use random_monge::{MongePrim, random_monge_matrix};
 
 #[test]
 fn random_monge() {

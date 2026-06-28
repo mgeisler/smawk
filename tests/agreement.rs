@@ -1,8 +1,8 @@
 #![cfg(feature = "ndarray")]
 
-use ndarray::{s, Array2};
-use rand::rngs::StdRng;
+use ndarray::{Array2, s};
 use rand::SeedableRng;
+use rand::rngs::StdRng;
 use smawk::{brute_force, online_column_minima, recursive};
 
 mod random_monge;
