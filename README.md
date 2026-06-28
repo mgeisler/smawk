@@ -1,7 +1,7 @@
 # SMAWK Algorithm in Rust
 
 [![](https://github.com/mgeisler/smawk/workflows/build/badge.svg)][build-status]
-[![](https://codecov.io/gh/mgeisler/smawk/branch/master/graph/badge.svg)][codecov]
+[![](https://codecov.io/gh/mgeisler/smawk/branch/main/graph/badge.svg)][codecov]
 [![](https://img.shields.io/crates/v/smawk.svg)][crates-io]
 [![](https://docs.rs/smawk/badge.svg)][api-docs]
 
@@ -163,7 +163,7 @@ minima.
 SMAWK can be distributed according to the [MIT license][mit]. Contributions will
 be accepted under the same license.
 
-[build-status]: https://github.com/mgeisler/smawk/actions?query=branch%3Amaster+workflow%3Abuild
+[build-status]: https://github.com/mgeisler/smawk/actions?query=branch%3Amain+workflow%3Abuild
 [crates-io]: https://crates.io/crates/smawk
 [codecov]: https://codecov.io/gh/mgeisler/smawk
 [textwrap]: https://crates.io/crates/textwrap

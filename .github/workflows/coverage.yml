@@ -2,9 +2,9 @@ name: coverage
 
 on:
   push:
-    branches: [master]
+    branches: [main]
   pull_request:
-    branches: [master]
+    branches: [main]
 
 env:
   CARGO_TERM_COLOR: always
@@ -20,7 +20,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           # Avoid PRs filling up the cache.
-          save-if: ${{ github.ref == 'refs/heads/master' }}
+          save-if: ${{ github.ref == 'refs/heads/main' }}
 
       - name: Install cargo-llvm-cov
         uses: taiki-e/install-action@cargo-llvm-cov

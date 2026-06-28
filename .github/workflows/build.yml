@@ -27,7 +27,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           # Avoid PRs filling up the cache.
-          save-if: ${{ github.ref == 'refs/heads/master' }}
+          save-if: ${{ github.ref == 'refs/heads/main' }}
 
       # Quick smoke test to detect serious brokenness.
       - name: Build with default features
@@ -62,7 +62,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           # Avoid PRs filling up the cache.
-          save-if: ${{ github.ref == 'refs/heads/master' }}
+          save-if: ${{ github.ref == 'refs/heads/main' }}
 
       - name: Check no_std compatibility (default features)
         run: cargo check --target thumbv7m-none-eabi --no-default-features
