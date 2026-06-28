@@ -1,8 +1,8 @@
 #![cfg(feature = "ndarray")]
 
 use ndarray::{Array1, Array2};
-use rand::rngs::StdRng;
 use rand::SeedableRng;
+use rand::rngs::StdRng;
 use smawk::online_column_minima;
 
 mod random_monge;

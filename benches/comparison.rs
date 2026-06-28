@@ -2,8 +2,8 @@
 
 use divan::{AllocProfiler, Bencher};
 use ndarray::Array2;
-use rand::rngs::StdRng;
 use rand::SeedableRng;
+use rand::rngs::StdRng;
 
 #[global_allocator]
 static ALLOC: AllocProfiler = AllocProfiler::system();

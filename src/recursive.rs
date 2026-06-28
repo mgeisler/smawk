@@ -8,7 +8,7 @@
 
 use alloc::vec;
 use alloc::vec::Vec;
-use ndarray::{s, Array2, ArrayView2, Axis};
+use ndarray::{Array2, ArrayView2, Axis, s};
 
 /// Compute row minima in O(*m* + *n* log *m*) time.
 ///

@@ -461,9 +461,7 @@ pub fn online_column_minima<T: Copy + PartialOrd, M: Fn(&[(usize, T)], usize, us
 
     // Shorthand for evaluating the matrix.
     macro_rules! m {
-        ($i:expr, $j:expr) => {{
-            matrix(&result[..finished + 1], $i, $j)
-        }};
+        ($i:expr, $j:expr) => {{ matrix(&result[..finished + 1], $i, $j) }};
     }
 
     let (mut rows_scratch, mut cols_scratch) = scratchpads_empty(size, size);

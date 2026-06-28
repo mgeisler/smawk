@@ -5,7 +5,7 @@
 // section on "Submodules in Integration Tests" in
 // https://doc.rust-lang.org/book/ch11-03-test-organization.html
 
-use ndarray::{s, Array2};
+use ndarray::{Array2, s};
 use num_traits::PrimInt;
 use rand::distr::{Distribution, StandardUniform};
 use rand::{Rng, RngExt};

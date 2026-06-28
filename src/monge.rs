@@ -34,11 +34,7 @@ where
         Wrapping<T>: Add<Output = Wrapping<T>>,
     {
         let sum = a + b;
-        if sum < a {
-            Err(sum.0)
-        } else {
-            Ok(sum.0)
-        }
+        if sum < a { Err(sum.0) } else { Ok(sum.0) }
     }
 
     (0..matrix.nrows() - 1)
