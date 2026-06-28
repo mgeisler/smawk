@@ -273,6 +273,7 @@ necessarily mean the hot loop has them. You must verify the specific function:
 The project uses GitHub Actions for continuous integration. The workflows in
 `.github/workflows` define the CI pipeline, which includes:
 
-- **Building and Testing**: On every push and pull request.
+- **Building, Testing, and Formatting**: Enforced on push (failures block merges
+  to `main`).
 - **Code Coverage**: Measured and uploaded to Codecov.
 - **Release Automation**: Automated publishing of new releases to crates.io.
