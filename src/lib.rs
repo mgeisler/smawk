@@ -347,26 +347,30 @@ fn smawk_inner<T: PartialOrd + Copy, M: Fn(usize, usize) -> T>(
     }
 
     let cols_len = cols_end - cols_start;
-    let stack_start = rows_end;
-    let odd_cols_start = cols_end;
+
+    assert!(rows_end <= rows_scratch.len());
+    assert!(cols_end <= cols_scratch.len());
+
+    let (rows_input_full, stack_space) = rows_scratch.split_at_mut(rows_end);
+    let rows_input = &rows_input_full[rows_start..];
+
+    let (cols_input_full, odd_cols_space) = cols_scratch.split_at_mut(cols_end);
+    let cols_input = &cols_input_full[cols_start..cols_end];
+
     let odd_cols_len = cols_len / 2;
 
-    // Upfront assertions using the maximum index trick. Asserting the
-    // maximum index accessed in each loop/vector beforehand allows
-    // LLVM to prove that all smaller indices accessed in the loop are
-    // in bounds, eliminating individual bounds checking inside the
-    // loops.
-    assert!(rows_end <= rows_scratch.len());
-    assert!(stack_start + cols_len <= rows_scratch.len());
-    assert!(cols_start + 2 * odd_cols_len <= cols_scratch.len());
-    assert!(odd_cols_start + odd_cols_len <= cols_scratch.len());
+    assert!(cols_len <= stack_space.len());
+    assert!(odd_cols_len <= odd_cols_space.len());
+
+    // Upfront O(1) assertion for output minima vector bounds.
+    let max_col = cols_input[cols_len - 1];
+    assert!(max_col < minima.len());
 
     let mut stack_len = 0;
-    for i in rows_start..rows_end {
-        let r = rows_scratch[i];
+    for &r in rows_input {
         while stack_len > 0 {
-            let stack_top = rows_scratch[stack_start + stack_len - 1];
-            let col = cols_scratch[cols_start + stack_len - 1];
+            let stack_top = stack_space[stack_len - 1];
+            let col = cols_input[stack_len - 1];
             if matrix(stack_top, col) > matrix(r, col) {
                 stack_len -= 1;
             } else {
@@ -374,49 +378,44 @@ fn smawk_inner<T: PartialOrd + Copy, M: Fn(usize, usize) -> T>(
             }
         }
         if stack_len < cols_len {
-            rows_scratch[stack_start + stack_len] = r;
+            stack_space[stack_len] = r;
             stack_len += 1;
         }
     }
 
-    for idx in 0..odd_cols_len {
-        let col = cols_scratch[cols_start + 2 * idx + 1];
-        cols_scratch[odd_cols_start + idx] = col;
+    for (idx, slot) in odd_cols_space[..odd_cols_len].iter_mut().enumerate() {
+        *slot = cols_input[2 * idx + 1];
     }
 
     smawk_inner(
         matrix,
-        (&mut *rows_scratch, stack_start, stack_start + stack_len),
-        (
-            &mut *cols_scratch,
-            odd_cols_start,
-            odd_cols_start + odd_cols_len,
-        ),
+        (stack_space, 0, stack_len),
+        (odd_cols_space, 0, odd_cols_len),
         minima,
     );
 
+    let stack_slice = &stack_space[..stack_len];
     let mut r = 0;
-    // Assert the final stack boundary before the loop.
-    assert!(stack_start + stack_len <= rows_scratch.len());
-    for c in 0..cols_len {
-        if c % 2 == 0 {
-            let col = cols_scratch[cols_start + c];
-            let mut row = rows_scratch[stack_start + r];
-            let last_row = if c == cols_len - 1 {
-                rows_scratch[stack_start + stack_len - 1]
-            } else {
-                minima[cols_scratch[cols_start + c + 1]]
-            };
-            let mut pair = (matrix(row, col), row);
-            while row != last_row && r < stack_len - 1 {
-                r += 1;
-                row = rows_scratch[stack_start + r];
-                if (matrix(row, col), row) < pair {
-                    pair = (matrix(row, col), row);
-                }
+
+    for c in (0..cols_len).step_by(2) {
+        let col = cols_input[c];
+        let mut row = stack_slice[r];
+        let last_row = if c + 1 == cols_len {
+            stack_slice[stack_len - 1]
+        } else {
+            let next_col = cols_input[c + 1];
+            minima[next_col]
+        };
+        let mut pair = (matrix(row, col), row);
+        while row != last_row && r + 1 < stack_len {
+            r += 1;
+            row = stack_slice[r];
+            let val = matrix(row, col);
+            if (val, row) < pair {
+                pair = (val, row);
             }
-            minima[col] = pair.1;
         }
+        minima[col] = pair.1;
     }
 }
 
