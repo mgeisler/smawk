@@ -102,6 +102,29 @@ cargo bench --bench online --features ndarray
 cargo bench --bench online --features ndarray -- smawk_online_column_minima/800
 ```
 
+### Measuring Test Coverage
+
+Test coverage is measured using
+[`cargo-llvm-cov`](https://github.com/taiki-e/cargo-llvm-cov).
+
+To generate a coverage summary across all features:
+
+```bash
+cargo llvm-cov --all-features
+```
+
+To list uncovered lines directly in the terminal:
+
+```bash
+cargo llvm-cov --all-features --show-missing-lines
+```
+
+To view an interactive HTML coverage report:
+
+```bash
+cargo llvm-cov --all-features --open
+```
+
 ## Development Conventions
 
 The `smawk` project adheres to modern Rust development practices.
